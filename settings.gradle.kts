@@ -24,3 +24,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "HomeFixGuide"
 include(":app")
+include(":core-api")
