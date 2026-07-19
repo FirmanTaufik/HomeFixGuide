@@ -44,9 +44,9 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    implementation(libs.hilt.android)
+
+    implementation(libs.bundles.hilt.compose) // This brings in both libraries
     ksp(libs.hilt.compiler)
 
-    implementation(libs.androidx.hilt.navigation.compose)
     implementation(project(":core-api"))
 }
