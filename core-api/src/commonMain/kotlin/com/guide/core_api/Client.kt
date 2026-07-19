@@ -27,7 +27,7 @@ object Client  {
                 })
             }
 
-            //    installNetworkMonitor()
+              installNetworkMonitor()
 
             // Plugin untuk Logging (sangat berguna saat debugging)
             /*install(Logging) {

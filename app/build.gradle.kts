@@ -67,4 +67,6 @@ dependencies {
 
     implementation(libs.bundles.hilt.compose)
     ksp(libs.hilt.compiler)
+    implementation(project(":core-module"))
+    implementation(project(":core-api"))
 }

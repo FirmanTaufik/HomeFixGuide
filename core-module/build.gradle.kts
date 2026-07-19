@@ -1,5 +1,5 @@
 plugins {
-    alias(libs.plugins.android.application)
+    id("com.android.library")
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
@@ -10,11 +10,6 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.guide.core.module"
-        minSdk = 24
-        targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -48,5 +43,7 @@ dependencies {
     implementation(libs.bundles.hilt.compose) // This brings in both libraries
     ksp(libs.hilt.compiler)
 
+    implementation("com.github.chuckerteam.chucker:library:4.1.0")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation(project(":core-api"))
 }

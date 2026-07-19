@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.android.kotlin.multiplatform.library)
     alias(libs.plugins.android.lint)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 kotlin {
@@ -66,11 +67,13 @@ kotlin {
         commonMain {
             dependencies {
                 implementation(libs.kotlin.stdlib)
-                implementation("io.ktor:ktor-client-core:2.3.12")
+                api("io.ktor:ktor-client-core:2.3.12")
                 implementation("io.ktor:ktor-client-content-negotiation:2.3.12")
                 implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.12")
                 implementation("io.ktor:ktor-client-logging:2.3.12")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
+              //  implementation("io.github.frankieshao:ktorsniffer:0.1.1")
+
                 // Add KMP dependencies here
             }
         }
@@ -84,20 +87,13 @@ kotlin {
         androidMain {
             dependencies {
                 implementation("io.ktor:ktor-client-okhttp:2.3.12")
-                implementation("ro.cosminmihu.ktor:ktor-monitor-logging:1.14.3")
                 // Add Android-specific dependencies here. Note that this source set depends on
                 // commonMain by default and will correctly pull the Android artifacts of any KMP
                 // dependencies declared in commonMain.
             }
         }
 
-        getByName("androidDeviceTest") {
-            dependencies {
-                implementation(libs.androidx.runner)
-                implementation(libs.androidx.core)
-                implementation(libs.androidx.junit)
-            }
-        }
+
 
         iosMain {
             dependencies {
