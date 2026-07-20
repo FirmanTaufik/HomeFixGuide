@@ -40,7 +40,9 @@ class MainActivity : ComponentActivity() {
             HomeFixGuideTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Box(
-                        modifier = Modifier.padding(innerPadding),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(innerPadding),
                         contentAlignment = Alignment.Center
                     ) {
                         val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -55,11 +57,11 @@ class MainActivity : ComponentActivity() {
                                     verticalArrangement = Arrangement.Center,
                                     horizontalAlignment = Alignment.CenterHorizontally) {
                                     Text(message)
-                                }
-                                Button(onClick = {
-                                    viewModel.getUser()
-                                }) {
-                                    Text("Try Again")
+                                    Button(onClick = {
+                                        viewModel.getUser()
+                                    }) {
+                                        Text("Try Again")
+                                    }
                                 }
                             }
                             Resource.Idle -> Unit
