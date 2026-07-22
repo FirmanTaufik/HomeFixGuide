@@ -17,6 +17,7 @@ class UserRepositoryImpl(
             val response = apiService.getUsers()
             response.toResource()
         } catch (e: Exception) {
+            print("UserRepositoryImplTAG " + e.cause?.message)
             Resource.Error("Gagal mengambil data pengguna, periksa koneksi Anda.", e)
         }
     }

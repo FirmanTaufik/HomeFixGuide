@@ -10,31 +10,21 @@ import io.ktor.client.plugins.logging.Logging
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
-// 1. Definisikan expect function untuk mendapatkan engine spesifik platform
-expect fun createPlatformHttpClient(): HttpClient
-expect fun HttpClientConfig<*>.installNetworkMonitor()
+expect object HttpClientFactory {
+    fun create(): HttpClient
+}
+
 
 object Client  {
     // 2. Buat fungsi helper untuk konfigurasi dasar client
     fun createHttpClient(): HttpClient {
-        return createPlatformHttpClient().config {
-            // Plugin untuk otomatis convert JSON ke Data Class (dan sebaliknya)
-            install(ContentNegotiation) {
-                json(Json {
-                    prettyPrint = true
-                    isLenient = true
-                    ignoreUnknownKeys = true // Sangat disarankan agar app tidak crash jika API menambah field baru
-                })
-            }
 
-              installNetworkMonitor()
+        return HttpClientFactory.create().config {
 
-            // Plugin untuk Logging (sangat berguna saat debugging)
-            /*install(Logging) {
+            install(Logging) {
                 logger = Logger.DEFAULT
-                level = LogLevel.INFO
-            }*/
-
+                level = LogLevel.ALL
+            }
         }
     }
 }

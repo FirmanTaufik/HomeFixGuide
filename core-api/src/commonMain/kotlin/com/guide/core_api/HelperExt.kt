@@ -11,6 +11,7 @@ suspend inline fun <reified T> HttpResponse.toResource(): Resource<T> {
         when (status.value) {
             401 -> Resource.SessionExpired
             else -> {
+                print("toResourceTAG  ${status.value}")
                 Resource.Error("Gagal mengambil data. Status code: ${status.value}")
             }
         }

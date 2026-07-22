@@ -34,12 +34,13 @@ kotlin {
     // A step-by-step guide on how to include this library in an XCode
     // project can be found here:
     // https://developer.android.com/kotlin/multiplatform/migrate
-    val xcfName = "core-apiKit"
+    val xcfName = "CoreApiKit"
     val xcf = XCFramework(xcfName)
 
     iosX64 {
         binaries.framework {
             baseName = xcfName
+            binaryOption("bundleId", "com.guide.coreapi")
             xcf.add(this)
         }
     }
@@ -47,6 +48,7 @@ kotlin {
     iosArm64 {
         binaries.framework {
             baseName = xcfName
+            binaryOption("bundleId", "com.guide.coreapi")
             xcf.add(this)
         }
     }
@@ -54,6 +56,7 @@ kotlin {
     iosSimulatorArm64 {
         binaries.framework {
             baseName = xcfName
+            binaryOption("bundleId", "com.guide.coreapi")
             xcf.add(this)
         }
     }
