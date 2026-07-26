@@ -24,7 +24,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.guide.core_api.Resource
-import com.guide.core_api.User
+import com.guide.core_api.model.BloggerResponse
+import com.guide.core_api.model.User
+import com.home.fixguide.helper.toLocalDeviceFormat
+import com.home.fixguide.items.BlogPostCard
 import com.home.fixguide.ui.theme.HomeFixGuideTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -65,15 +68,34 @@ class MainActivity : ComponentActivity() {
                                 }
                             }
                             Resource.Idle -> Unit
-                            Resource.Loading -> CircularProgressIndicator()
+                            Resource.Loading ->  {
+                                LazyColumn(modifier = Modifier.fillMaxSize()) {
+                                    items(10){
+                                        BlogPostCard(isLoading = true) { }
+                                    }
+                                }
+                            }
                             Resource.SessionExpired ->  {
                                 Text("Navigate To Logout")
                             }
                             is Resource.Success<*> -> {
-                                val datas = currentState.data as List<User>
+                                val datas = currentState.data as  BloggerResponse
                                 LazyColumn(modifier = Modifier.fillMaxSize()) {
-                                    itemsIndexed(datas){ index, item ->
-                                        Text(item.name)
+                                    itemsIndexed(datas.feed?.entry ?: emptyList()){ index, item ->
+                                        var category = ""
+                                        if (!item.category.isNullOrEmpty()) {
+                                            category = item.category?.first()?.term ?: ""
+                                        }
+                                        BlogPostCard(
+                                            title = item.title?.text ?: "",
+                                            category = category,
+                                            imageUrl = item.thumbnail?.url ?: "",
+                                            authorName= item.author?.first()?.name?.text ?: "",
+                                            publishedDate = item.published?.text?.toLocalDeviceFormat() ?: "",
+
+                                        ){
+
+                                        }
                                     }
                                 }
                             }

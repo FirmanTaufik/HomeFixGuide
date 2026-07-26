@@ -1,5 +1,8 @@
 package com.guide.core_api
 
+import com.guide.core_api.repository.UserRepositoryImpl
+import com.guide.core_api.usecase.GetUsersUseCase
+
 class AppContainer {
 
     private val httpClient = Client.createHttpClient()
