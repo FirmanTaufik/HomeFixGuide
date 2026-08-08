@@ -75,8 +75,11 @@ kotlin {
                 implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.12")
                 implementation("io.ktor:ktor-client-logging:2.3.12")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
-              //  implementation("io.github.frankieshao:ktorsniffer:0.1.1")
-
+             //   implementation("com.fleeksoft.ksoup:ksoup-kotlinx:0.2.5")
+              //  implementation("com.fleeksoft.ksoup:ksoup-okio:0.2.6")
+            //    implementation("com.fleeksoft.ksoup:ksoup-network:0.2.5")
+                //  implementation("io.github.frankieshao:ktorsniffer:0.1.1")
+                implementation("com.fleeksoft.ksoup:ksoup:0.2.5")
                 // Add KMP dependencies here
             }
         }

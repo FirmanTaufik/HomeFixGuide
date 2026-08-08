@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
+    alias(libs.plugins.kotlin.serialization) // Tambahkan baris ini
 }
 
 android {
@@ -57,6 +58,7 @@ dependencies {
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.foundation)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -68,6 +70,10 @@ dependencies {
     implementation("io.coil-kt.coil3:coil-network-okhttp:3.3.0")
     implementation(libs.bundles.hilt.compose)
     ksp(libs.hilt.compiler)
+    implementation("io.github.raamcosta.compose-destinations:core:1.10.0")
+    ksp("io.github.raamcosta.compose-destinations:ksp:1.10.0")
+    implementation("androidx.compose.foundation:foundation:1.4.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
     implementation(project(":core-module"))
     implementation(project(":core-api"))
 }

@@ -14,6 +14,14 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.layout
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import coil3.network.HttpException
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import okio.IOException
 
 fun String.toLocalDeviceFormat(): String {
     return try {
@@ -72,5 +80,48 @@ fun Modifier.gone(isGone: Boolean = true): Modifier {
         this.layout { _, _ -> layout(0, 0) {} }
     } else {
         this
+    }
+}
+
+inline fun <T> T.executeTask(
+    dispatcher: CoroutineDispatcher,
+    onLoading: () -> Unit = {},
+    noinline onError: (String) -> Unit = {},
+    crossinline onComplete:  CoroutineScope.() -> Unit = {},
+    crossinline execute: suspend CoroutineScope.() -> Unit
+): Job where T : ViewModel, T : ExceptionParser {
+
+    onLoading()
+
+    return viewModelScope.launch(dispatcher) {
+        try {
+            execute(this)
+        } catch (exception: Exception) {
+            generateDisplayError(exception, onError)
+        } finally {
+            onComplete()
+        }
+    }
+}
+
+interface ExceptionParser {
+
+    fun generateDisplayError(
+        exception: Exception,
+        onError: (String) -> Unit
+    ) {
+        when (exception) {
+            is IOException -> {
+                onError("No Internet")
+            }
+
+            is HttpException -> {
+                onError("Server Error")
+            }
+
+            else -> {
+                onError("Terjadi kesalahan")
+            }
+        }
     }
 }
