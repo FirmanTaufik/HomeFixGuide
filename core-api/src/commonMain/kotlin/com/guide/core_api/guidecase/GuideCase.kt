@@ -100,7 +100,7 @@ class GuideCase {
             if (stepContainers.isNotEmpty()) {
                 var stepNum = 1
                 stepContainers.forEach { stepEl ->
-                    val stepTitle = stepEl.selectFirst(".step-title, h3, h4")?.text() ?: "Langkah $stepNum"
+                    val stepTitle = stepEl.selectFirst(".step-title, h3, h4")?.text() ?: "Step $stepNum"
                     val lines = stepEl.select(".step-instruction, .step-instructions li, .step-text, .step-body p, p").mapNotNull { p ->
                         val t = p.text().trim()
                         if (t.isNotBlank()) t else null

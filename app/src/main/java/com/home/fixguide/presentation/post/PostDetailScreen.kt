@@ -32,7 +32,7 @@ fun PostDetailScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Detail Post", style = MaterialTheme.typography.titleMedium) },
+                title = { Text("Post Details", style = MaterialTheme.typography.titleMedium) },
                 navigationIcon = {
                     IconButton(onClick = { navigator.popBackStack() }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
@@ -89,11 +89,11 @@ fun PostDetailScreen(
 fun PostDetailScreenPreview() {
     HomeFixGuideTheme {
         PostDetailScreen(
-            title = "Panduan Memperbaiki Baterai Ponsel yang Cepat Habis",
+            title = "How to Troubleshoot Fast Battery Drain on Smartphones",
             imageUrl = "https://images.unsplash.com/photo-1588508065123-287b28e013da",
-            content = "Langkah pertama dalam mengatasi baterai yang cepat habis adalah dengan memeriksa kesehatan baterai di menu Pengaturan. Jika kapasitas maksimum sudah di bawah 80%, pertimbangkan untuk mengganti baterai dengan yang baru. Pastikan selalu menggunakan obeng presisi dan alat pembuka berbahan plastik agar tidak merusak sasis maupun layar perangkat.",
-            author = "Admin FixGuide",
-            date = "23 Agustus 2026",
+            content = "The first step in diagnosing fast battery drain is checking battery health in the device Settings menu. If maximum capacity is below 80%, consider replacing the battery. Always use precision screwdrivers and plastic pry tools to prevent cosmetic or component damage during repair.",
+            author = "FixGuide Staff",
+            date = "August 23, 2026",
             navigator = EmptyDestinationsNavigator
         )
     }

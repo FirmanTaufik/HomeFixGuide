@@ -98,7 +98,7 @@ fun HomeScreen(
                 onValueChange = { viewModel.onSearchQueryChanged(it) },
                 placeholder = {
                     Text(
-                        text = "Cari perangkat atau panduan... (misal: iPhone 14, Baterai, Mac)",
+                        text = "Search devices or repair guides... (e.g. iPhone 14, Battery, Mac)",
                         style = MaterialTheme.typography.bodyMedium,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
@@ -136,7 +136,7 @@ fun HomeScreen(
             )
 
             if (currentQuery.isNotBlank()) {
-                // Tampilan Hasil Pencarian
+                // Search Results View
                 when (val resultState = searchResults) {
                     is Resource.Loading -> {
                         Box(
@@ -149,7 +149,7 @@ fun HomeScreen(
                             ) {
                                 CircularProgressIndicator(color = TechBlue, strokeWidth = 4.dp)
                                 Text(
-                                    text = "Mencari di iFixit...",
+                                    text = "Searching iFixit...",
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = MaterialTheme.colorScheme.outline
                                 )
@@ -165,7 +165,7 @@ fun HomeScreen(
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                text = resultState.message.ifEmpty { "Gagal melakukan pencarian." },
+                                text = resultState.message.ifEmpty { "Search failed." },
                                 style = MaterialTheme.typography.bodyLarge,
                                 textAlign = TextAlign.Center,
                                 color = MaterialTheme.colorScheme.error
@@ -193,7 +193,7 @@ fun HomeScreen(
                                         modifier = Modifier.size(40.dp)
                                     )
                                     Text(
-                                        text = "Tidak ditemukan hasil untuk \"$currentQuery\"",
+                                        text = "No results found for \"$currentQuery\"",
                                         style = MaterialTheme.typography.bodyLarge,
                                         textAlign = TextAlign.Center,
                                         color = MaterialTheme.colorScheme.outline
@@ -208,7 +208,7 @@ fun HomeScreen(
                             ) {
                                 item {
                                     Text(
-                                        text = "Hasil Pencarian (${items.size})",
+                                        text = "Search Results (${items.size})",
                                         style = MaterialTheme.typography.titleMedium,
                                         fontWeight = FontWeight.Bold,
                                         color = MaterialTheme.colorScheme.onSurface,
@@ -234,14 +234,14 @@ fun HomeScreen(
                     else -> Unit
                 }
             } else {
-                // Tampilan Normal Home (Banner + Tab Kategori)
+                // Normal Home View (Banner + Category Tabs)
                 when (state) {
                     is Resource.Error -> {
                         Box(
                             modifier = Modifier.fillMaxSize(),
                             contentAlignment = Alignment.Center
                         ) {
-                            Text("Gagal memuat kategori. Periksa koneksi internet.")
+                            Text("Failed to load categories. Please check your internet connection.")
                         }
                     }
 
@@ -364,7 +364,7 @@ fun SearchResultCard(
                     overflow = TextOverflow.Ellipsis
                 )
                 Spacer(modifier = Modifier.height(3.dp))
-                val typeLabel = if (item.url.contains("/Guide/")) "Panduan Perbaikan" else "Perangkat / Model"
+                val typeLabel = if (item.url.contains("/Guide/")) "Repair Guide" else "Device / Model"
                 Text(
                     text = typeLabel,
                     style = MaterialTheme.typography.bodySmall,

@@ -56,7 +56,7 @@ class HomeViewModel @Inject constructor(
                 val results = guideCase.searchGuides(newQuery)
                 searchState.value = Resource.Success(results)
             } catch (e: Exception) {
-                searchState.value = Resource.Error(e.message ?: "Gagal mencari panduan", e)
+                searchState.value = Resource.Error(e.message ?: "Failed to search guides", e)
             }
         }
     }

@@ -53,7 +53,7 @@ class CategoryViewModel @Inject constructor(
 
     override fun generateDisplayError(exception: Exception, onError: (String) -> Unit) {
         Log.d("CategoryViewModel", "generateDisplayError: ${exception.message}")
-        uiState.value = Resource.Error(exception.message ?: "Gagal memuat data", exception)
+        uiState.value = Resource.Error(exception.message ?: "Failed to load data", exception)
         super.generateDisplayError(exception, onError)
     }
 }

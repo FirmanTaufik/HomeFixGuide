@@ -74,7 +74,7 @@ fun SavedScreen(
                 TopAppBar(
                     title = {
                         Text(
-                            text = "Panduan Tersimpan",
+                            text = "Saved Guides",
                             fontWeight = FontWeight.Bold
                         )
                     },
@@ -116,13 +116,13 @@ fun SavedScreen(
                                 }
                             }
                             Text(
-                                text = "Belum Ada Panduan Tersimpan",
+                                text = "No Saved Guides Yet",
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onSurface
                             )
                             Text(
-                                text = "Simpan panduan perbaikan atau perangkat favorit Anda untuk akses cepat kapan saja secara offline.",
+                                text = "Save your favorite repair guides or devices for quick offline access anytime.",
                                 style = MaterialTheme.typography.bodyMedium,
                                 textAlign = TextAlign.Center,
                                 color = MaterialTheme.colorScheme.outline
@@ -219,7 +219,7 @@ fun SavedItemCard(
                     overflow = TextOverflow.Ellipsis
                 )
                 Spacer(modifier = Modifier.height(4.dp))
-                val label = if (item.url.contains("/Guide/")) "Panduan Perbaikan" else "Perangkat / Model"
+                val label = if (item.url.contains("/Guide/")) "Repair Guide" else "Device / Model"
                 Text(
                     text = label,
                     style = MaterialTheme.typography.bodySmall,
@@ -230,7 +230,7 @@ fun SavedItemCard(
             IconButton(onClick = onDelete) {
                 Icon(
                     imageVector = Icons.Default.Delete,
-                    contentDescription = "Hapus",
+                    contentDescription = "Delete",
                     tint = MaterialTheme.colorScheme.outline
                 )
             }

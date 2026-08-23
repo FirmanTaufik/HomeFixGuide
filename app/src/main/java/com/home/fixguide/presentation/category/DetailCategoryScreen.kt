@@ -1,6 +1,5 @@
 package com.home.fixguide.presentation.category
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -12,7 +11,6 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -133,7 +131,7 @@ fun DetailCategoryScreen(
                         ) {
                             Icon(
                                 imageVector = if (isSaved) Icons.Filled.Bookmark else Icons.Outlined.BookmarkBorder,
-                                contentDescription = if (isSaved) "Tersimpan" else "Simpan",
+                                contentDescription = if (isSaved) "Saved" else "Save",
                                 tint = if (isSaved) TechBlue else MaterialTheme.colorScheme.onSurface
                             )
                         }
@@ -165,7 +163,7 @@ fun DetailCategoryScreen(
                                     strokeWidth = 4.dp
                                 )
                                 Text(
-                                    text = "Memuat data iFixit...",
+                                    text = "Loading iFixit data...",
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = MaterialTheme.colorScheme.outline
                                 )
@@ -191,7 +189,7 @@ fun DetailCategoryScreen(
                                     modifier = Modifier.size(48.dp)
                                 )
                                 Text(
-                                    text = state.message.ifEmpty { "Gagal memuat data dari iFixit" },
+                                    text = state.message.ifEmpty { "Failed to load data from iFixit" },
                                     style = MaterialTheme.typography.bodyLarge,
                                     textAlign = TextAlign.Center,
                                     color = MaterialTheme.colorScheme.onSurface
@@ -206,7 +204,7 @@ fun DetailCategoryScreen(
                                         modifier = Modifier.size(18.dp)
                                     )
                                     Spacer(modifier = Modifier.width(8.dp))
-                                    Text("Coba Lagi")
+                                    Text("Try Again")
                                 }
                             }
                         }
@@ -216,14 +214,14 @@ fun DetailCategoryScreen(
                         val detailData = state.data as? GuideDetailCategory
                         if (detailData != null) {
                             if (detailData.isStepGuide && detailData.listCategory.isEmpty()) {
-                                // Tampilan Mode Step-by-Step Guide / Troubleshooting (Persis iFixit Web Guide)
+                                // Step-by-Step Guide View (Matching iFixit Web Guide)
                                 IFixitStepGuideView(
                                     detailData = detailData,
                                     fallbackCategory = guideCategory,
                                     navigator = navigator
                                 )
                             } else {
-                                // Tampilan Mode Direktori Kategori / Device iFixit (Pilih Tipe Produk / Model Terlebih Dahulu)
+                                // Device & Category Directory View (Matching iFixit Device Page)
                                 IFixitDeviceDirectoryView(
                                     detailData = detailData,
                                     guideCategory = guideCategory,
@@ -241,7 +239,7 @@ fun DetailCategoryScreen(
 }
 
 /**
- * Tampilan UI Halaman Device / Kategori (Sesuai iFixit Web)
+ * Device / Category Directory View (Matching iFixit Web)
  */
 @Composable
 fun IFixitDeviceDirectoryView(
@@ -260,7 +258,7 @@ fun IFixitDeviceDirectoryView(
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = "Tidak ada perangkat atau panduan perbaikan yang ditemukan.",
+                text = "No devices or repair guides found.",
                 style = MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.Center,
                 color = MaterialTheme.colorScheme.outline
@@ -333,11 +331,11 @@ fun IFixitDeviceDirectoryView(
             }
         }
 
-        // Section 1: Sub-kategori / Model Perangkat
+        // Section 1: Subcategories / Device Models
         if (subcategories.isNotEmpty()) {
             item {
                 Text(
-                    text = "Pilih Perangkat / Model",
+                    text = "Select Device / Model",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface,
@@ -371,11 +369,11 @@ fun IFixitDeviceDirectoryView(
             }
         }
 
-        // Section 2: Daftar Panduan Perbaikan (Repair Guides)
+        // Section 2: Repair Guides List
         if (guides.isNotEmpty()) {
             item {
                 Text(
-                    text = "Panduan Perbaikan (${guides.size})",
+                    text = "Repair Guides (${guides.size})",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface,
@@ -400,7 +398,7 @@ fun IFixitDeviceDirectoryView(
 }
 
 /**
- * Tampilan UI Halaman Step-by-Step Guide (Sesuai iFixit Web)
+ * Step-by-Step Guide View (Matching iFixit Web)
  */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -450,7 +448,7 @@ fun IFixitStepGuideView(
                     if (detailData.author.isNotBlank()) {
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = "Penulis: ${detailData.author}",
+                            text = "Author: ${detailData.author}",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.outline
                         )
@@ -465,7 +463,7 @@ fun IFixitStepGuideView(
                         if (detailData.difficulty.isNotBlank()) {
                             item {
                                 MetaChip(
-                                    label = "Tingkat: ${detailData.difficulty}",
+                                    label = "Difficulty: ${detailData.difficulty}",
                                     badgeColor = MeterYellow.copy(alpha = 0.2f),
                                     textColor = Color(0xFFB7791F)
                                 )
@@ -474,7 +472,7 @@ fun IFixitStepGuideView(
                         if (detailData.timeRequired.isNotBlank()) {
                             item {
                                 MetaChip(
-                                    label = "Waktu: ${detailData.timeRequired}",
+                                    label = "Time: ${detailData.timeRequired}",
                                     badgeColor = TechBlue.copy(alpha = 0.15f),
                                     textColor = TechBlue
                                 )
@@ -482,7 +480,7 @@ fun IFixitStepGuideView(
                         }
                         item {
                             MetaChip(
-                                label = "${steps.size} Langkah",
+                                label = "${steps.size} Steps",
                                 badgeColor = CircuitGreen.copy(alpha = 0.15f),
                                 textColor = CircuitGreen
                             )
@@ -504,7 +502,7 @@ fun IFixitStepGuideView(
             }
         }
 
-        // Tools & Parts Section (Jika ada)
+        // Tools & Parts Section
         if (detailData.tools.isNotEmpty() || detailData.parts.isNotEmpty()) {
             item {
                 Card(
@@ -525,7 +523,7 @@ fun IFixitStepGuideView(
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Text(
-                                    text = "Alat yang Dibutuhkan:",
+                                    text = "Tools Required:",
                                     style = MaterialTheme.typography.titleSmall,
                                     fontWeight = FontWeight.Bold
                                 )
@@ -562,7 +560,7 @@ fun IFixitStepGuideView(
         // Step-by-Step Section Header
         item {
             Text(
-                text = "Langkah-Langkah Perbaikan",
+                text = "Repair Steps",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface,
@@ -582,11 +580,11 @@ fun IFixitStepGuideView(
             )
         }
 
-        // Related Guides (Jika ada)
+        // Related Guides
         if (detailData.listGuides.isNotEmpty()) {
             item {
                 Text(
-                    text = "Panduan Terkait Lainnya",
+                    text = "Related Guides",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(top = 16.dp)
@@ -607,7 +605,7 @@ fun IFixitStepGuideView(
 }
 
 /**
- * Kartu Langkah Perbaikan (iFixit Style Step Card)
+ * Step Card (iFixit Style Step Card)
  */
 @Composable
 fun IFixitStepCard(
@@ -655,7 +653,7 @@ fun IFixitStepCard(
                 Spacer(modifier = Modifier.width(10.dp))
 
                 Text(
-                    text = step.title.ifEmpty { "Langkah ${step.stepNumber}" },
+                    text = step.title.ifEmpty { "Step ${step.stepNumber}" },
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface,
@@ -668,7 +666,7 @@ fun IFixitStepCard(
                 ) {
                     Icon(
                         imageVector = if (isChecked) Icons.Filled.CheckCircle else Icons.Outlined.CheckCircle,
-                        contentDescription = "Selesai",
+                        contentDescription = "Completed",
                         tint = if (isChecked) CircuitGreen else MaterialTheme.colorScheme.outline
                     )
                 }
@@ -691,7 +689,7 @@ fun IFixitStepCard(
                 }
             }
 
-            // Bullet Point Instructions (dengan penanda warna ala iFixit)
+            // Bullet Point Instructions
             if (step.lines.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(10.dp))
                 step.lines.forEachIndexed { lineIdx, line ->
@@ -723,7 +721,7 @@ fun IFixitStepCard(
 }
 
 /**
- * Kartu Panduan Perbaikan iFixit (iFixit Guide Item Card)
+ * iFixit Guide Item Card
  */
 @Composable
 fun IFixitGuideCard(
@@ -783,7 +781,7 @@ fun IFixitGuideCard(
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "Panduan Perbaikan Langkah demi Langkah",
+                    text = "Step-by-step Repair Guide",
                     style = MaterialTheme.typography.bodySmall,
                     color = TechBlue
                 )
@@ -800,7 +798,7 @@ fun IFixitGuideCard(
 }
 
 /**
- * Kartu Sub-Kategori / Device Item
+ * Sub-Category / Device Item Card
  */
 @Composable
 fun SubCategoryItemCard(
