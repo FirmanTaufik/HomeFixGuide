@@ -83,7 +83,11 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
-@RootNavGraph(start = true)
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.LightMode
+import com.home.fixguide.ui.theme.MeterYellow
+
 @Destination
 @Composable
 fun HomeScreen(
@@ -93,6 +97,9 @@ fun HomeScreen(
     val state by uiState.collectAsStateWithLifecycle()
     val searchResults by searchState.collectAsStateWithLifecycle()
     val currentQuery by searchQuery.collectAsStateWithLifecycle()
+    val userThemePreference by isDarkMode.collectAsStateWithLifecycle()
+    val isSystemDark = isSystemInDarkTheme()
+    val isDark = userThemePreference ?: isSystemDark
     var selectedTabIndex by remember { mutableIntStateOf(0) }
 
     BaseScreen(
@@ -106,8 +113,11 @@ fun HomeScreen(
                 .background(MaterialTheme.colorScheme.background)
                 .padding(start = 16.dp, end = 16.dp, top = 2.dp)
         ) {
-            // Modern Header Branding
-            HomeHeader()
+            // Modern Header Branding with Dark Mode Toggle
+            HomeHeader(
+                isDark = isDark,
+                onToggleTheme = { viewModel.toggleTheme(isSystemDark) }
+            )
 
             Spacer(modifier = Modifier.height(10.dp))
 
@@ -337,44 +347,69 @@ fun HomeScreen(
 }
 
 @Composable
-private fun HomeHeader() {
+private fun HomeHeader(
+    isDark: Boolean,
+    onToggleTheme: () -> Unit
+) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp)
     ) {
-        Surface(
-            shape = RoundedCornerShape(12.dp),
-            color = TechBlue,
-            modifier = Modifier.size(42.dp)
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.weight(1f)
         ) {
-            Box(contentAlignment = Alignment.Center) {
-                Icon(
-                    imageVector = Icons.Default.Build,
-                    contentDescription = null,
-                    tint = Color.White,
-                    modifier = Modifier.size(22.dp)
+            Surface(
+                shape = RoundedCornerShape(12.dp),
+                color = TechBlue,
+                modifier = Modifier.size(42.dp)
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Icon(
+                        imageVector = Icons.Default.Build,
+                        contentDescription = null,
+                        tint = Color.White,
+                        modifier = Modifier.size(22.dp)
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.width(12.dp))
+
+            Column {
+                Text(
+                    text = "FixGuide",
+                    style = MaterialTheme.typography.titleLarge.copy(
+                        fontWeight = FontWeight.ExtraBold,
+                        letterSpacing = (-0.5).sp
+                    ),
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Text(
+                    text = "Repair everything yourself",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }
 
-        Spacer(modifier = Modifier.width(12.dp))
-
-        Column {
-            Text(
-                text = "FixGuide",
-                style = MaterialTheme.typography.titleLarge.copy(
-                    fontWeight = FontWeight.ExtraBold,
-                    letterSpacing = (-0.5).sp
-                ),
-                color = MaterialTheme.colorScheme.onSurface
-            )
-            Text(
-                text = "Repair everything yourself",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+        // Theme Toggle Icon Button
+        Surface(
+            shape = CircleShape,
+            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f),
+            modifier = Modifier.size(40.dp)
+        ) {
+            IconButton(onClick = onToggleTheme) {
+                Icon(
+                    imageVector = if (isDark) Icons.Default.LightMode else Icons.Default.DarkMode,
+                    contentDescription = "Toggle Dark Mode",
+                    tint = if (isDark) MeterYellow else TechBlue,
+                    modifier = Modifier.size(22.dp)
+                )
+            }
         }
     }
 }

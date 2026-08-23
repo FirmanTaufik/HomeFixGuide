@@ -7,6 +7,7 @@ import com.guide.core_api.guidecase.GuideCase
 import com.guide.core_api.model.guide.GuideCategory
 import com.guide.core_api.model.guide.GuideSubCategory
 import com.home.fixguide.base.BaseViewModel
+import com.home.fixguide.data.local.ThemeManager
 import com.home.fixguide.helper.executeTask
 import com.home.fixguide.helper.mutableStateDelegate
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,7 +20,14 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     val guideCase: GuideCase,
+    val themeManager: ThemeManager
 ) : BaseViewModel() {
+
+    val isDarkMode = themeManager.isDarkMode
+
+    fun toggleTheme(isSystemDark: Boolean) {
+        themeManager.toggleDarkMode(isSystemDark)
+    }
 
     var uiState by mutableStateDelegate<Resource<Pair<List<GuideCategory>, List<GuideSubCategory>>>>(
         Resource.Loading

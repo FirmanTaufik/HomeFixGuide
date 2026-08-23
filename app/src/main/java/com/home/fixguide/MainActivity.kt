@@ -62,12 +62,23 @@ import androidx.compose.ui.unit.dp
 import com.home.fixguide.ui.theme.TechBlue
 import com.home.fixguide.ui.theme.TechBlueLight
 
+import androidx.compose.foundation.isSystemInDarkTheme
+import com.home.fixguide.data.local.ThemeManager
+import javax.inject.Inject
+
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    @Inject
+    lateinit var themeManager: ThemeManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            val isSystemDark = isSystemInDarkTheme()
+            val userThemePreference by themeManager.isDarkMode.collectAsStateWithLifecycle()
+            val isDark = userThemePreference ?: isSystemDark
 
             val items = listOf(
                 Triple("Home", Icons.Default.Home, HomeScreenDestination),
@@ -87,7 +98,7 @@ class MainActivity : ComponentActivity() {
 
             val showBottomMenu = currentDestination in mapListScreenMenu
 
-            HomeFixGuideTheme {
+            HomeFixGuideTheme(darkTheme = isDark) {
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
                     contentWindowInsets = WindowInsets(0, 0, 0, 0),
