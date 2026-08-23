@@ -2,7 +2,10 @@ package com.guide.core.module
 
 
 import android.content.Context
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.chuckerteam.chucker.api.ChuckerInterceptor
+import com.guide.core.manager.NetworkManager
 import com.guide.core_api.ApiService
 import com.guide.core_api.ApiServiceImpl
 import com.guide.core_api.usecase.GetUsersUseCase
@@ -25,6 +28,12 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
 
+
+    @Provides
+    @Singleton
+    fun provideNetworkManager(
+        @ApplicationContext context: Context
+    ): NetworkManager = NetworkManager(context)
 
     @Provides
     @Singleton

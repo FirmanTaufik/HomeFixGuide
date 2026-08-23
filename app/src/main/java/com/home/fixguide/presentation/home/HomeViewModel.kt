@@ -8,6 +8,7 @@ import com.guide.core_api.model.guide.GuideCategory
 import com.guide.core_api.model.guide.GuideSubCategory
 import com.home.fixguide.base.BaseViewModel
 import com.home.fixguide.helper.executeTask
+import com.home.fixguide.helper.mutableStateDelegate
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -27,22 +28,12 @@ class HomeViewModel @Inject constructor(
         getCategory()
     }
 
-    fun getCategory() {
-        executeTask(
-            Dispatchers.IO,
-            onLoading = {
-
-            },
-            onError = {
-
-                Log.d("FirmanTAG", "executeTask: ${it}")
-            },
-            onComplete = {
-
-            }) {
-            /*uiState.value = */guideCase.getGuides()
+    fun getCategory() = executeTask(
+        Dispatchers.IO,
+        onSuccess = {
+            uiState.value = it as Resource<Pair<List<GuideCategory>, List<GuideSubCategory>>>
         }
+    ) {
+        guideCase.getGuides()
     }
-
-
 }

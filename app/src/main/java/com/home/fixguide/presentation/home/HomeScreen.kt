@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.guide.core_api.model.guide.GuideSubCategory
 import com.home.fixguide.R
+import com.home.fixguide.base.BaseScreen
 import com.home.fixguide.presentation.category.DetailCategoryScreen
 import com.home.fixguide.presentation.component.FeatureSubCategory
 import com.home.fixguide.presentation.component.FeaturedCategoryCard
@@ -53,12 +54,15 @@ import com.home.fixguide.presentation.destinations.DetailCategoryScreenDestinati
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
     navigator: DestinationsNavigator,
-) {
-    val state by viewModel.uiState.collectAsStateWithLifecycle()
+) = with(viewModel) {
+    val state by uiState.collectAsStateWithLifecycle()
     var selectedTabIndex by remember { mutableIntStateOf(0) }
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+
+
+    BaseScreen (
+        modifier = Modifier.fillMaxSize() ,
+        viewModel = viewModel
+
     ) {
         when (state) {
             is Resource.Error -> {
@@ -66,10 +70,14 @@ fun HomeScreen(
             }
 
             Resource.Loading -> {
-                CircularProgressIndicator(
-                    color = androidx.compose.ui.graphics.Color.Black,
-                    strokeWidth = 6.dp
-                )
+                Box(modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center) {
+
+                    CircularProgressIndicator(
+                        color = androidx.compose.ui.graphics.Color.Black,
+                        strokeWidth = 6.dp
+                    )
+                }
             }
 
             is Resource.Success<*> -> {

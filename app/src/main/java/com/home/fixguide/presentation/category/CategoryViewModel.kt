@@ -1,20 +1,13 @@
 package com.home.fixguide.presentation.category
 
 import android.util.Log
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.guide.core_api.Resource
 import com.guide.core_api.guidecase.GuideCase
 import com.guide.core_api.model.guide.GuideDetailCategory
-import com.guide.core_api.usecase.GetBlogUseCase
-import com.guide.core_api.usecase.GetUsersUseCase
 import com.home.fixguide.base.BaseViewModel
-import com.home.fixguide.helper.ExceptionParser
-import com.home.fixguide.helper.executeTask
+import com.home.fixguide.helper.mutableStateDelegate
 import dagger.hilt.android.lifecycle.HiltViewModel
-import jakarta.inject.Inject
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @HiltViewModel
 class CategoryViewModel @Inject constructor(
@@ -33,5 +26,4 @@ class CategoryViewModel @Inject constructor(
         Log.d("FirmanTAG", "generateDisplayError: ")
         super.generateDisplayError(exception, onError)
     }
-
 }

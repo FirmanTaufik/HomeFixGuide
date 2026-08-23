@@ -7,7 +7,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -23,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.guide.core_api.Resource
@@ -36,66 +36,60 @@ import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 @Destination
 @Composable
 fun DetailCategoryScreen(
-    guideCategory: GuideCategory ,
+    guideCategory: GuideCategory,
     viewModel: CategoryViewModel = hiltViewModel(),
     navigator: DestinationsNavigator,
-) = with(viewModel){
+) {
     LaunchedEffect(Unit) {
         viewModel.getDetail(guideCategory.url)
     }
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    Scaffold(modifier = Modifier.fillMaxSize(), topBar = {
-        TopAppBar(
-            title = {
-                Text(guideCategory.text)
-            },
-            navigationIcon = {
-                IconButton(onClick = {
-                    navigator.popBackStack()
-                }) {
-                    Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "")
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        topBar = {
+            TopAppBar(
+                title = { Text(guideCategory.text) },
+                navigationIcon = {
+                    IconButton(onClick = { navigator.popBackStack() }) {
+                        Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    }
                 }
-            }
-        )
-    }) { paddingValues ->
-
-        Box(modifier = Modifier.fillMaxSize()
-            .padding(paddingValues),
-            contentAlignment = Alignment.Center) {
-
-            when(uiState){
-                is Resource.Error -> {
-
-                }
-                Resource.Loading -> CircularProgressIndicator(
-                    color = Color.Blue
-                )
+            )
+        }
+    ) { paddingValues ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
+            contentAlignment = Alignment.Center
+        ) {
+            when (uiState) {
+                is Resource.Error -> { /* Handle Error */ }
+                Resource.Loading -> CircularProgressIndicator(color = Color.Blue)
                 is Resource.Success<*> -> {
-                    val data =  (uiState as Resource.Success<Any?>).data as GuideDetailCategory
-                    LazyColumn(modifier = Modifier.fillMaxSize()) {
-                        itemsIndexed(data.listCategory){ index, item ->
-                            Text(item.text)
+                    val data = (uiState as Resource.Success<*>).data as? GuideDetailCategory
+                    data?.let {
+                        LazyColumn(modifier = Modifier.fillMaxSize()) {
+                            itemsIndexed(it.listCategory) { _, item ->
+                                Text(item.text, modifier = Modifier.padding(16.dp))
+                            }
                         }
                     }
                 }
                 else -> Unit
             }
-
         }
     }
 }
 
-
+// Preview diperbaiki: Jangan panggil hiltViewModel() di sini
 @Composable
 @Preview(showSystemUi = true)
-fun DetailCategoryScreenPreview(){
-    MaterialTheme() {
-        DetailCategoryScreen(
-            GuideCategory(),
-            viewModel = hiltViewModel<CategoryViewModel>(),
-            navigator = EmptyDestinationsNavigator
-        )
+fun DetailCategoryScreenPreview() {
+    MaterialTheme {
+        // Mocking behavior for preview
+        Text("Detail Category Preview Content")
     }
 }

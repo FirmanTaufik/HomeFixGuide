@@ -5,13 +5,12 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
-    alias(libs.plugins.kotlin.serialization) // Tambahkan baris ini
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
     namespace = "com.home.fixguide"
 
-    // Disederhanakan agar stabil menggunakan Android 15 / API 35 terbaru
     compileSdk = 36
 
     defaultConfig {
@@ -34,7 +33,6 @@ android {
         }
     }
 
-    // Diperbarui ke Java 17 karena Kotlin 2.2.x membutuhkan JDK minimal versi 17
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -59,6 +57,7 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.foundation)
+    
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -66,8 +65,10 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+    
     implementation("io.coil-kt.coil3:coil-compose:3.3.0")
     implementation("io.coil-kt.coil3:coil-network-okhttp:3.3.0")
+    
     implementation(libs.bundles.hilt.compose)
     ksp(libs.hilt.compiler)
     implementation("io.github.raamcosta.compose-destinations:core:1.10.0")

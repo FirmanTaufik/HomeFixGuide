@@ -16,8 +16,7 @@ class GuideCase {
     val baseUrl = "https://www.ifixit.com/"
     val client =  Client.createHttpClient()
 
-    suspend fun getGuides(): Resource<Pair<List<GuideCategory>, List<GuideSubCategory>>> {
-      return  try {
+    suspend fun getGuides(): Pair<List<GuideCategory>, List<GuideSubCategory>> {
             val html = client.get(baseUrl +"guide").bodyAsText()
             val doc = Ksoup.parse(html)
             val body = doc.getElementsByClass("featured-categories")
@@ -45,11 +44,7 @@ class GuideCase {
               )
           }
 
-          Resource.Success(Pair(items, itemSubCategory) )
-        } catch (e: Exception) {
-            print("guideUsecase data ${e.cause}")
-          Resource.Error(e.message ?: "")
-        }
+        return Pair(items, itemSubCategory)
     }
 
     suspend fun getDetailCategory(url: String):Resource<GuideDetailCategory>{

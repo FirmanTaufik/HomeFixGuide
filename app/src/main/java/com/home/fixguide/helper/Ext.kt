@@ -17,11 +17,15 @@ import androidx.compose.ui.layout.layout
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import coil3.network.HttpException
+import com.guide.core_api.Resource
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import okio.IOException
+import kotlin.properties.ReadWriteProperty
+import kotlin.reflect.KProperty
 
 fun String.toLocalDeviceFormat(): String {
     return try {
@@ -83,19 +87,21 @@ fun Modifier.gone(isGone: Boolean = true): Modifier {
     }
 }
 
-inline fun <T> T.executeTask(
+inline fun <T,R> T.executeTask(
     dispatcher: CoroutineDispatcher,
     onLoading: () -> Unit = {},
     noinline onError: (String) -> Unit = {},
+    crossinline onSuccess: CoroutineScope.(Resource.Success<*>) -> Unit = {},
     crossinline onComplete:  CoroutineScope.() -> Unit = {},
-    crossinline execute: suspend CoroutineScope.() -> Unit
+    crossinline execute: suspend CoroutineScope.() -> R
 ): Job where T : ViewModel, T : ExceptionParser {
 
     onLoading()
 
     return viewModelScope.launch(dispatcher) {
         try {
-            execute(this)
+            val result = execute()
+            onSuccess(Resource.Success(result))
         } catch (exception: Exception) {
             generateDisplayError(exception, onError)
         } finally {
@@ -103,6 +109,27 @@ inline fun <T> T.executeTask(
         }
     }
 }
+
+fun <T> mutableStateDelegate(
+    defaultValue: T
+): ReadWriteProperty<Any?, MutableStateFlow<T>> =
+    object : ReadWriteProperty<Any?, MutableStateFlow<T>> {
+
+        private val flow = MutableStateFlow(defaultValue)
+
+        override fun getValue(
+            thisRef: Any?,
+            property: KProperty<*>
+        ): MutableStateFlow<T> = flow
+
+        override fun setValue(
+            thisRef: Any?,
+            property: KProperty<*>,
+            value: MutableStateFlow<T>
+        ) {
+            flow.value = value.value
+        }
+    }
 
 interface ExceptionParser {
 
