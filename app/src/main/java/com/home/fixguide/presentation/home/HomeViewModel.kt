@@ -11,6 +11,8 @@ import com.home.fixguide.helper.executeTask
 import com.home.fixguide.helper.mutableStateDelegate
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -23,6 +25,9 @@ class HomeViewModel @Inject constructor(
         Resource.Loading
     )
 
+    var searchState by mutableStateDelegate<Resource<List<GuideCategory>>>(Resource.Idle)
+    var searchQuery by mutableStateDelegate("")
+    private var searchJob: Job? = null
 
     init {
         getCategory()
@@ -35,5 +40,30 @@ class HomeViewModel @Inject constructor(
         }
     ) {
         guideCase.getGuides()
+    }
+
+    fun onSearchQueryChanged(newQuery: String) {
+        searchQuery.value = newQuery
+        searchJob?.cancel()
+        if (newQuery.isBlank()) {
+            searchState.value = Resource.Idle
+            return
+        }
+        searchJob = viewModelScope.launch(Dispatchers.IO) {
+            delay(500) // Debounce 500ms
+            searchState.value = Resource.Loading
+            try {
+                val results = guideCase.searchGuides(newQuery)
+                searchState.value = Resource.Success(results)
+            } catch (e: Exception) {
+                searchState.value = Resource.Error(e.message ?: "Gagal mencari panduan", e)
+            }
+        }
+    }
+
+    fun clearSearch() {
+        searchQuery.value = ""
+        searchState.value = Resource.Idle
+        searchJob?.cancel()
     }
 }

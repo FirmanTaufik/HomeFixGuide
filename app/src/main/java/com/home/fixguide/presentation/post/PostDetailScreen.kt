@@ -10,10 +10,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.home.fixguide.ui.theme.HomeFixGuideTheme
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Destination
@@ -63,29 +66,7 @@ fun PostDetailScreen(
                 Row(
                     modifier = Modifier.padding(vertical = 8.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {// ... existing code ...
-import com.home.fixguide.helper.executeTask
-import kotlinx.coroutines.Dispatchers
-
-@HiltViewModel
-class CategoryViewModel @Inject constructor(
-    val guideCase: GuideCase
-) : BaseViewModel() {
-
-    var uiState by mutableStateDelegate<Resource<GuideDetailCategory>>(Resource.Loading)
-
-    fun getDetail(url: String) = executeTask(
-        dispatcher = Dispatchers.IO,
-        onSuccess = {
-            uiState.value = it as Resource<GuideDetailCategory>
-        }
-    ) {
-        // Memanggil repository untuk scraping data iFixit
-        guideCase.getDetailCategory(url)
-    }
-
-    // ... rest of code ...
-}
+                ) {
                     Text(text = author, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
                     Text(text = "•", style = MaterialTheme.typography.labelLarge)
                     Text(text = date, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.outline)
@@ -100,5 +81,20 @@ class CategoryViewModel @Inject constructor(
                 )
             }
         }
+    }
+}
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun PostDetailScreenPreview() {
+    HomeFixGuideTheme {
+        PostDetailScreen(
+            title = "Panduan Memperbaiki Baterai Ponsel yang Cepat Habis",
+            imageUrl = "https://images.unsplash.com/photo-1588508065123-287b28e013da",
+            content = "Langkah pertama dalam mengatasi baterai yang cepat habis adalah dengan memeriksa kesehatan baterai di menu Pengaturan. Jika kapasitas maksimum sudah di bawah 80%, pertimbangkan untuk mengganti baterai dengan yang baru. Pastikan selalu menggunakan obeng presisi dan alat pembuka berbahan plastik agar tidak merusak sasis maupun layar perangkat.",
+            author = "Admin FixGuide",
+            date = "23 Agustus 2026",
+            navigator = EmptyDestinationsNavigator
+        )
     }
 }

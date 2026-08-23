@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
@@ -46,6 +47,7 @@ import com.home.fixguide.presentation.appCurrentDestinationAsState
 import com.home.fixguide.presentation.destinations.CategoryScreenDestination
 import com.home.fixguide.presentation.destinations.HomeScreenDestination
 import com.home.fixguide.presentation.destinations.ProfileScreenDestination
+import com.home.fixguide.presentation.destinations.SavedScreenDestination
 import com.home.fixguide.ui.theme.HomeFixGuideTheme
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.rememberNavHostEngine
@@ -61,6 +63,7 @@ class MainActivity : ComponentActivity() {
 
             val items = listOf(
                 Triple("Home", Icons.Default.Home, HomeScreenDestination),
+                Triple("Saved", Icons.Default.Bookmark, SavedScreenDestination),
                 Triple("Profile", Icons.Default.Person, ProfileScreenDestination)
             )
             val engine = rememberNavHostEngine()
