@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -21,10 +22,13 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Handyman
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
@@ -39,6 +43,8 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRowDefaults
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -48,6 +54,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
@@ -61,12 +68,17 @@ import coil3.compose.AsyncImage
 import com.guide.core_api.Resource
 import com.guide.core_api.model.guide.GuideCategory
 import com.guide.core_api.model.guide.GuideSubCategory
-import com.home.fixguide.R
 import com.home.fixguide.base.BaseScreen
 import com.home.fixguide.presentation.component.FeatureSubCategory
 import com.home.fixguide.presentation.component.FeaturedCategoryCard
+import com.home.fixguide.presentation.component.HomeCategoryGridShimmer
+import com.home.fixguide.presentation.component.HomeSubCategoryListShimmer
+import com.home.fixguide.presentation.component.SearchListShimmer
 import com.home.fixguide.presentation.destinations.DetailCategoryScreenDestination
+import com.home.fixguide.ui.theme.CircuitGreen
+import com.home.fixguide.ui.theme.IndigoAccent
 import com.home.fixguide.ui.theme.TechBlue
+import com.home.fixguide.ui.theme.TechBlueLight
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -90,16 +102,24 @@ fun HomeScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 12.dp, vertical = 8.dp)
+                .statusBarsPadding()
+                .background(MaterialTheme.colorScheme.background)
+                .padding(start = 16.dp, end = 16.dp, top = 2.dp)
         ) {
-            // Search Bar iFixit
+            // Modern Header Branding
+            HomeHeader()
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            // Modern Search Bar
             OutlinedTextField(
                 value = currentQuery,
                 onValueChange = { viewModel.onSearchQueryChanged(it) },
                 placeholder = {
                     Text(
-                        text = "Search devices or repair guides... (e.g. iPhone 14, Battery, Mac)",
+                        text = "Search devices or repair guides...",
                         style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -117,7 +137,7 @@ fun HomeScreen(
                             Icon(
                                 imageVector = Icons.Default.Clear,
                                 contentDescription = "Clear",
-                                tint = MaterialTheme.colorScheme.outline
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     }
@@ -132,29 +152,14 @@ fun HomeScreen(
                 ),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 8.dp)
+                    .padding(bottom = 6.dp)
             )
 
             if (currentQuery.isNotBlank()) {
                 // Search Results View
                 when (val resultState = searchResults) {
                     is Resource.Loading -> {
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.spacedBy(10.dp)
-                            ) {
-                                CircularProgressIndicator(color = TechBlue, strokeWidth = 4.dp)
-                                Text(
-                                    text = "Searching iFixit...",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.outline
-                                )
-                            }
-                        }
+                        SearchListShimmer()
                     }
 
                     is Resource.Error -> {
@@ -184,19 +189,20 @@ fun HomeScreen(
                             ) {
                                 Column(
                                     horizontalAlignment = Alignment.CenterHorizontally,
-                                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                                    verticalArrangement = Arrangement.spacedBy(10.dp)
                                 ) {
                                     Icon(
                                         imageVector = Icons.Default.Info,
                                         contentDescription = null,
                                         tint = MaterialTheme.colorScheme.outline,
-                                        modifier = Modifier.size(40.dp)
+                                        modifier = Modifier.size(44.dp)
                                     )
                                     Text(
                                         text = "No results found for \"$currentQuery\"",
                                         style = MaterialTheme.typography.bodyLarge,
+                                        fontWeight = FontWeight.Medium,
                                         textAlign = TextAlign.Center,
-                                        color = MaterialTheme.colorScheme.outline
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 }
                             }
@@ -207,13 +213,30 @@ fun HomeScreen(
                                 modifier = Modifier.fillMaxSize()
                             ) {
                                 item {
-                                    Text(
-                                        text = "Search Results (${items.size})",
-                                        style = MaterialTheme.typography.titleMedium,
-                                        fontWeight = FontWeight.Bold,
-                                        color = MaterialTheme.colorScheme.onSurface,
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
                                         modifier = Modifier.padding(vertical = 4.dp)
-                                    )
+                                    ) {
+                                        Text(
+                                            text = "Search Results",
+                                            style = MaterialTheme.typography.titleMedium,
+                                            fontWeight = FontWeight.Bold,
+                                            color = MaterialTheme.colorScheme.onSurface
+                                        )
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                        Surface(
+                                            shape = RoundedCornerShape(12.dp),
+                                            color = TechBlueLight
+                                        ) {
+                                            Text(
+                                                text = "${items.size}",
+                                                color = TechBlue,
+                                                fontWeight = FontWeight.Bold,
+                                                style = MaterialTheme.typography.labelMedium,
+                                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+                                            )
+                                        }
+                                    }
                                 }
                                 items(items) { searchItem ->
                                     SearchResultCard(
@@ -234,68 +257,74 @@ fun HomeScreen(
                     else -> Unit
                 }
             } else {
-                // Normal Home View (Banner + Category Tabs)
-                when (state) {
+                // Normal Home View (Category Tabs & Grid)
+                when (val homeState = state) {
                     is Resource.Error -> {
                         Box(
                             modifier = Modifier.fillMaxSize(),
                             contentAlignment = Alignment.Center
                         ) {
-                            Text("Failed to load categories. Please check your internet connection.")
+                            Text(
+                                text = "Failed to load categories. Please check your internet connection.",
+                                style = MaterialTheme.typography.bodyMedium,
+                                textAlign = TextAlign.Center,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
                         }
                     }
 
                     Resource.Loading -> {
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            CircularProgressIndicator(
-                                color = TechBlue,
-                                strokeWidth = 4.dp
+                        Column(modifier = Modifier.fillMaxSize()) {
+                            TabSection(
+                                selectedTabIndex = selectedTabIndex,
+                                onClick = { selectedTabIndex = it }
                             )
+                            Spacer(modifier = Modifier.height(10.dp))
+                            if (selectedTabIndex == 0) {
+                                HomeCategoryGridShimmer()
+                            } else {
+                                HomeSubCategoryListShimmer()
+                            }
                         }
                     }
 
                     is Resource.Success<*> -> {
-                        val datas = (state as Resource.Success<Pair<List<GuideCategory>, List<GuideSubCategory>>>).data
+                        val data = homeState.data as? Pair<List<GuideCategory>, List<GuideSubCategory>>
+                        val categories = data?.first ?: emptyList()
+                        val subcategories = data?.second ?: emptyList()
+
                         Column(modifier = Modifier.fillMaxSize()) {
-                            AsyncImage(
-                                model = R.drawable.illu_home,
-                                contentDescription = "Home Banner",
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = 6.dp)
-                                    .clip(RoundedCornerShape(12.dp))
-                                    .height(200.dp),
-                                contentScale = ContentScale.Crop
+                            TabSection(
+                                selectedTabIndex = selectedTabIndex,
+                                onClick = { selectedTabIndex = it }
                             )
 
-                            TabSection(selectedTabIndex) {
-                                selectedTabIndex = it
-                            }
+                            Spacer(modifier = Modifier.height(10.dp))
 
-                            when (selectedTabIndex) {
-                                0 -> {
-                                    CategorySection(datas.first) {
+                            if (selectedTabIndex == 0) {
+                                CategorySection(
+                                    datas = categories,
+                                    onClick = { item ->
                                         navigator.navigate(
-                                            DetailCategoryScreenDestination(guideCategory = it)
+                                            DetailCategoryScreenDestination(guideCategory = item)
                                         )
                                     }
-                                }
-                                else -> SubCategorySection(datas.second) { subCat ->
-                                    if (subCat.url.isNotBlank()) {
+                                )
+                            } else {
+                                SubCategorySection(
+                                    items = subcategories,
+                                    onClick = { item ->
                                         navigator.navigate(
                                             DetailCategoryScreenDestination(
                                                 guideCategory = GuideCategory(
-                                                    text = subCat.text,
+                                                    text = item.text,
                                                     image = "",
-                                                    url = subCat.url
+                                                    url = item.url
                                                 )
                                             )
                                         )
                                     }
-                                }
+                                )
                             }
                         }
                     }
@@ -308,19 +337,62 @@ fun HomeScreen(
 }
 
 @Composable
-fun SearchResultCard(
+private fun HomeHeader() {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp)
+    ) {
+        Surface(
+            shape = RoundedCornerShape(12.dp),
+            color = TechBlue,
+            modifier = Modifier.size(42.dp)
+        ) {
+            Box(contentAlignment = Alignment.Center) {
+                Icon(
+                    imageVector = Icons.Default.Build,
+                    contentDescription = null,
+                    tint = Color.White,
+                    modifier = Modifier.size(22.dp)
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.width(12.dp))
+
+        Column {
+            Text(
+                text = "FixGuide",
+                style = MaterialTheme.typography.titleLarge.copy(
+                    fontWeight = FontWeight.ExtraBold,
+                    letterSpacing = (-0.5).sp
+                ),
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            Text(
+                text = "Repair everything yourself",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
+}
+
+@Composable
+private fun SearchResultCard(
     item: GuideCategory,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    onClick: () -> Unit
 ) {
     Card(
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(14.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        modifier = modifier
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.5.dp, pressedElevation = 4.dp),
+        modifier = Modifier
             .fillMaxWidth()
+            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(14.dp))
             .clickable { onClick() }
     ) {
         Row(
@@ -333,18 +405,18 @@ fun SearchResultCard(
                     contentDescription = item.text,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
-                        .size(54.dp)
-                        .clip(RoundedCornerShape(8.dp))
+                        .size(56.dp)
+                        .clip(RoundedCornerShape(10.dp))
                 )
             } else {
                 Surface(
-                    shape = RoundedCornerShape(8.dp),
-                    color = TechBlue.copy(alpha = 0.15f),
-                    modifier = Modifier.size(54.dp)
+                    shape = RoundedCornerShape(10.dp),
+                    color = TechBlueLight,
+                    modifier = Modifier.size(56.dp)
                 ) {
                     Box(contentAlignment = Alignment.Center) {
                         Icon(
-                            imageVector = Icons.Default.Search,
+                            imageVector = Icons.Default.Build,
                             contentDescription = null,
                             tint = TechBlue,
                             modifier = Modifier.size(24.dp)
@@ -353,7 +425,7 @@ fun SearchResultCard(
                 }
             }
 
-            Spacer(modifier = Modifier.width(12.dp))
+            Spacer(modifier = Modifier.width(14.dp))
 
             Column(modifier = Modifier.weight(1f)) {
                 Text(
@@ -364,11 +436,12 @@ fun SearchResultCard(
                     overflow = TextOverflow.Ellipsis
                 )
                 Spacer(modifier = Modifier.height(3.dp))
-                val typeLabel = if (item.url.contains("/Guide/")) "Repair Guide" else "Device / Model"
+                val isGuide = item.url.contains("/Guide/")
+                val typeLabel = if (isGuide) "Repair Guide" else "Device / Model"
                 Text(
                     text = typeLabel,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = TechBlue
+                    style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
+                    color = if (isGuide) CircuitGreen else TechBlue
                 )
             }
 
@@ -376,7 +449,7 @@ fun SearchResultCard(
                 imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.outline,
-                modifier = Modifier.size(20.dp)
+                modifier = Modifier.size(18.dp)
             )
         }
     }
@@ -387,8 +460,11 @@ private fun SubCategorySection(
     items: List<GuideSubCategory>,
     onClick: (GuideSubCategory) -> Unit
 ) {
-    LazyColumn(modifier = Modifier) {
-        itemsIndexed(items) { index, item ->
+    LazyColumn(
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+        modifier = Modifier.fillMaxSize()
+    ) {
+        itemsIndexed(items) { _, item ->
             FeatureSubCategory(
                 item = item,
                 modifier = Modifier.clickable {
@@ -404,17 +480,14 @@ private fun CategorySection(datas: List<GuideCategory>, onClick: (GuideCategory)
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(5.dp)
+        contentPadding = PaddingValues(2.dp)
     ) {
-        itemsIndexed(datas) { index, item ->
+        itemsIndexed(datas) { _, item ->
             FeaturedCategoryCard(
                 category = item,
                 onClick = {
                     onClick(item)
-                },
-                modifier = Modifier
-                    .width(180.dp)
-                    .height(180.dp)
+                }
             )
         }
     }
@@ -423,13 +496,34 @@ private fun CategorySection(datas: List<GuideCategory>, onClick: (GuideCategory)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TabSection(selectedTabIndex: Int, onClick: (Int) -> Unit) {
-    val list = listOf("Category", "Sub Category")
-    PrimaryTabRow(selectedTabIndex = selectedTabIndex) {
+    val list = listOf("Categories", "All Subcategories")
+    PrimaryTabRow(
+        selectedTabIndex = selectedTabIndex,
+        containerColor = Color.Transparent,
+        contentColor = TechBlue,
+        indicator = {
+            TabRowDefaults.PrimaryIndicator(
+                modifier = Modifier.tabIndicatorOffset(selectedTabIndex),
+                color = TechBlue,
+                width = 48.dp,
+                shape = RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp)
+            )
+        },
+        divider = {}
+    ) {
         list.forEachIndexed { index, title ->
             Tab(
                 selected = selectedTabIndex == index,
                 onClick = { onClick(index) },
-                text = { Text(title) }
+                text = {
+                    Text(
+                        text = title,
+                        style = MaterialTheme.typography.titleSmall.copy(
+                            fontWeight = if (selectedTabIndex == index) FontWeight.Bold else FontWeight.Medium
+                        ),
+                        color = if (selectedTabIndex == index) TechBlue else MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
             )
         }
     }

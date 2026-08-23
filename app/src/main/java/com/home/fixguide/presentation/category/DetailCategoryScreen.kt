@@ -72,6 +72,8 @@ import com.guide.core_api.model.guide.GuideCategory
 import com.guide.core_api.model.guide.GuideDetailCategory
 import com.guide.core_api.model.guide.GuideStep
 import com.home.fixguide.base.BaseScreen
+import com.home.fixguide.presentation.component.DetailCategoryShimmer
+import com.home.fixguide.presentation.component.StepGuideShimmer
 import com.home.fixguide.presentation.destinations.DetailCategoryScreenDestination
 import com.home.fixguide.ui.theme.CircuitGreen
 import com.home.fixguide.ui.theme.MeterYellow
@@ -150,24 +152,11 @@ fun DetailCategoryScreen(
             ) {
                 when (val state = uiState) {
                     is Resource.Loading -> {
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.spacedBy(12.dp)
-                            ) {
-                                CircularProgressIndicator(
-                                    color = TechBlue,
-                                    strokeWidth = 4.dp
-                                )
-                                Text(
-                                    text = "Loading iFixit data...",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.outline
-                                )
-                            }
+                        val isGuide = guideCategory.url.contains("/Guide/", ignoreCase = true) || guideCategory.url.contains("/Wiki/", ignoreCase = true)
+                        if (isGuide) {
+                            StepGuideShimmer()
+                        } else {
+                            DetailCategoryShimmer()
                         }
                     }
 
