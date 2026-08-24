@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "630295094602",
+    "firebase_url": "https://androidapp-d2d6b-default-rtdb.firebaseio.com",
+    "project_id": "androidapp-d2d6b",
+    "storage_bucket": "androidapp-d2d6b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:630295094602:android:7258a270256f030637cdb3",
+        "android_client_info": {
+          "package_name": "com.app.apas"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDdyNE1nAoJojXuzDBQgnufsOguK-aPR-Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:630295094602:android:76cc9262e19b71ed37cdb3",
+        "android_client_info": {
+          "package_name": "com.home.fixguide"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDdyNE1nAoJojXuzDBQgnufsOguK-aPR-Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:630295094602:android:0d0b6517c73da43a37cdb3",
+        "android_client_info": {
+          "package_name": "com.testremoteconfig.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDdyNE1nAoJojXuzDBQgnufsOguK-aPR-Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

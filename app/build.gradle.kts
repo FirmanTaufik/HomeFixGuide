@@ -1,11 +1,11 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-    // Otomatis mengaktifkan compiler Compose versi Kotlin 2.0+
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
     alias(libs.plugins.kotlin.serialization)
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -57,6 +57,7 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.foundation)
+    implementation("androidx.compose.material:material-icons-extended")
     
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -75,6 +76,15 @@ dependencies {
     ksp("io.github.raamcosta.compose-destinations:ksp:1.10.0")
     implementation("androidx.compose.foundation:foundation:1.4.3")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+
+    // Room
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
+
     implementation(project(":core-module"))
     implementation(project(":core-api"))
+
+    implementation(platform("com.google.firebase:firebase-bom:34.18.0"))
+    implementation("com.google.firebase:firebase-analytics")
 }

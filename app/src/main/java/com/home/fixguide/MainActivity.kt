@@ -9,15 +9,18 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationBarItem
@@ -46,21 +49,40 @@ import com.home.fixguide.presentation.appCurrentDestinationAsState
 import com.home.fixguide.presentation.destinations.CategoryScreenDestination
 import com.home.fixguide.presentation.destinations.HomeScreenDestination
 import com.home.fixguide.presentation.destinations.ProfileScreenDestination
+import com.home.fixguide.presentation.destinations.SavedScreenDestination
 import com.home.fixguide.ui.theme.HomeFixGuideTheme
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.rememberNavHostEngine
 import com.ramcosta.composedestinations.utils.navGraph
 import dagger.hilt.android.AndroidEntryPoint
 
+import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import com.home.fixguide.ui.theme.TechBlue
+import com.home.fixguide.ui.theme.TechBlueLight
+
+import androidx.compose.foundation.isSystemInDarkTheme
+import com.home.fixguide.data.local.ThemeManager
+import javax.inject.Inject
+
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    @Inject
+    lateinit var themeManager: ThemeManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            val isSystemDark = isSystemInDarkTheme()
+            val userThemePreference by themeManager.isDarkMode.collectAsStateWithLifecycle()
+            val isDark = userThemePreference ?: isSystemDark
 
             val items = listOf(
                 Triple("Home", Icons.Default.Home, HomeScreenDestination),
+                Triple("Saved", Icons.Default.Bookmark, SavedScreenDestination),
                 Triple("Profile", Icons.Default.Person, ProfileScreenDestination)
             )
             val engine = rememberNavHostEngine()
@@ -74,44 +96,61 @@ class MainActivity : ComponentActivity() {
             val mapListScreenMenu = items.map { it.third }
             val currentDestination by navController.appCurrentDestinationAsState()
 
-            val showBottomMenu = currentDestination in  mapListScreenMenu
+            val showBottomMenu = currentDestination in mapListScreenMenu
 
-                HomeFixGuideTheme {
-                    Scaffold(
-                        modifier = Modifier.fillMaxSize(),
-                        bottomBar = {
-                            AnimatedVisibility(showBottomMenu) {
-                                NavigationBar(windowInsets = NavigationBarDefaults.windowInsets) {
-                                    items.forEachIndexed { index, destination ->
-                                        NavigationBarItem(
-                                            selected = selectedDestination == index,
-                                            onClick = {
-                                                navController.navigate(destination.third.route) {
-                                                    popUpTo(navController.graph.findStartDestination().id) {
-                                                        saveState = true
-                                                    }
-                                                    launchSingleTop = true
-                                                    restoreState = true
+            HomeFixGuideTheme(darkTheme = isDark) {
+                Scaffold(
+                    modifier = Modifier.fillMaxSize(),
+                    contentWindowInsets = WindowInsets(0, 0, 0, 0),
+                    bottomBar = {
+                        AnimatedVisibility(showBottomMenu) {
+                            NavigationBar(
+                                containerColor = MaterialTheme.colorScheme.surface,
+                                tonalElevation = 6.dp,
+                                windowInsets = NavigationBarDefaults.windowInsets
+                            ) {
+                                items.forEachIndexed { index, destination ->
+                                    NavigationBarItem(
+                                        selected = selectedDestination == index,
+                                        onClick = {
+                                            navController.navigate(destination.third.route) {
+                                                popUpTo(navController.graph.findStartDestination().id) {
+                                                    saveState = true
                                                 }
-                                                selectedDestination = index
-                                            },
-                                            icon = {
-                                                Icon(
-                                                    destination.second,
-                                                    contentDescription = destination.first
-                                                )
-                                            },
-                                            label = { Text(destination.first) }
+                                                launchSingleTop = true
+                                                restoreState = true
+                                            }
+                                            selectedDestination = index
+                                        },
+                                        icon = {
+                                            Icon(
+                                                destination.second,
+                                                contentDescription = destination.first
+                                            )
+                                        },
+                                        label = {
+                                            Text(
+                                                text = destination.first,
+                                                fontWeight = if (selectedDestination == index) FontWeight.Bold else FontWeight.Normal
+                                            )
+                                        },
+                                        colors = NavigationBarItemDefaults.colors(
+                                            selectedIconColor = TechBlue,
+                                            selectedTextColor = TechBlue,
+                                            indicatorColor = TechBlueLight,
+                                            unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                            unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
                                         )
-                                    }
+                                    )
                                 }
                             }
-                        }) { innerPadding ->
+                        }
+                    }) { innerPadding ->
                         DestinationsNavHost(
                             navGraph = NavGraphs.root,
                             engine = engine,
                             navController = navController,
-                            modifier = Modifier.padding(innerPadding)
+                            modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding())
                         )
                     }
                 }

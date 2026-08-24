@@ -17,15 +17,14 @@ import com.home.fixguide.items.NoInternetIllustration
 
 @Composable
 fun BaseScreen(
-    modifier: Modifier= Modifier,
-    isUseSystemBarsPadding : Boolean = true,
+    modifier: Modifier = Modifier,
+    isUseSystemBarsPadding: Boolean = false,
     viewModel: BaseViewModel = hiltViewModel(),
     content: @Composable () -> Unit
-){
+) {
     Box(
         modifier = modifier
             .fillMaxSize()
-            .navigationBarsPadding()
             .then(if (isUseSystemBarsPadding) Modifier.systemBarsPadding() else Modifier)
     ) {
         LaunchedEffect(Unit) {
