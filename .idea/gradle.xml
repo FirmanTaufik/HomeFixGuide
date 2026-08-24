@@ -5,25 +5,13 @@
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
         <option name="testRunner" value="CHOOSE_PER_TEST" />
-        <option name="externalProjectPath" value="$PROJECT_DIR$/../../../../Shared/hl/HomeFixGuide" />
-        <option name="modules">
-          <set>
-            <option value="$PROJECT_DIR$/../../../../Shared/hl/HomeFixGuide" />
-            <option value="$PROJECT_DIR$/../../../../Shared/hl/HomeFixGuide/app" />
-            <option value="$PROJECT_DIR$/../../../../Shared/hl/HomeFixGuide/core-api" />
-            <option value="$PROJECT_DIR$/../../../../Shared/hl/HomeFixGuide/core-module" />
-          </set>
-        </option>
-      </GradleProjectSettings>
-      <GradleProjectSettings>
-        <option name="testRunner" value="CHOOSE_PER_TEST" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="modules">
           <set>
-            <option value="$PROJECT_DIR$/../../../../Shared/hl/HomeFixGuide" />
-            <option value="$PROJECT_DIR$/../../../../Shared/hl/HomeFixGuide/app" />
-            <option value="$PROJECT_DIR$/../../../../Shared/hl/HomeFixGuide/core-api" />
-            <option value="$PROJECT_DIR$/../../../../Shared/hl/HomeFixGuide/core-module" />
+            <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/core-api" />
+            <option value="$PROJECT_DIR$/core-module" />
           </set>
         </option>
       </GradleProjectSettings>
