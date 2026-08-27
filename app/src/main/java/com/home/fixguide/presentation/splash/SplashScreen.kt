@@ -281,7 +281,7 @@ fun SplashScreen(
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = "Powered by iFixit",
+                            text = "Powered by FixGuide",
                             style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Medium),
                             color = badgeTextColor
                         )

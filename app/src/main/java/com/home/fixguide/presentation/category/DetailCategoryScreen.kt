@@ -106,7 +106,7 @@ fun DetailCategoryScreen(
                 TopAppBar(
                     title = {
                         Text(
-                            text = guideCategory.text.ifEmpty { "iFixit Guide" },
+                            text = guideCategory.text.ifEmpty { "FixGuide" },
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                             fontWeight = FontWeight.Bold
@@ -178,7 +178,7 @@ fun DetailCategoryScreen(
                                     modifier = Modifier.size(48.dp)
                                 )
                                 Text(
-                                    text = state.message.ifEmpty { "Failed to load data from iFixit" },
+                                    text = state.message.ifEmpty { "Failed to load data" },
                                     style = MaterialTheme.typography.bodyLarge,
                                     textAlign = TextAlign.Center,
                                     color = MaterialTheme.colorScheme.onSurface
@@ -203,15 +203,15 @@ fun DetailCategoryScreen(
                         val detailData = state.data as? GuideDetailCategory
                         if (detailData != null) {
                             if (detailData.isStepGuide && detailData.listCategory.isEmpty()) {
-                                // Step-by-Step Guide View (Matching iFixit Web Guide)
-                                IFixitStepGuideView(
+                                // Step-by-Step Guide View (Matching Web Guide)
+                                StepGuideView(
                                     detailData = detailData,
                                     fallbackCategory = guideCategory,
                                     navigator = navigator
                                 )
                             } else {
-                                // Device & Category Directory View (Matching iFixit Device Page)
-                                IFixitDeviceDirectoryView(
+                                // Device & Category Directory View (Matching Device Page)
+                                DeviceDirectoryView(
                                     detailData = detailData,
                                     guideCategory = guideCategory,
                                     navigator = navigator
@@ -228,10 +228,10 @@ fun DetailCategoryScreen(
 }
 
 /**
- * Device / Category Directory View (Matching iFixit Web)
+ * Device / Category Directory View (Matching Web)
  */
 @Composable
-fun IFixitDeviceDirectoryView(
+fun DeviceDirectoryView(
     detailData: GuideDetailCategory,
     guideCategory: GuideCategory,
     navigator: DestinationsNavigator
@@ -371,7 +371,7 @@ fun IFixitDeviceDirectoryView(
             }
 
             items(guides) { guideItem ->
-                IFixitGuideCard(
+                GuideCard(
                     item = guideItem,
                     onClick = {
                         if (guideItem.url.isNotBlank()) {
@@ -387,11 +387,11 @@ fun IFixitDeviceDirectoryView(
 }
 
 /**
- * Step-by-Step Guide View (Matching iFixit Web)
+ * Step-by-Step Guide View (Matching Web)
  */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun IFixitStepGuideView(
+fun StepGuideView(
     detailData: GuideDetailCategory,
     fallbackCategory: GuideCategory,
     navigator: DestinationsNavigator
@@ -557,10 +557,10 @@ fun IFixitStepGuideView(
             )
         }
 
-        // Step Cards (iFixit Step Format)
+        // Step Cards
         itemsIndexed(steps) { index, step ->
             val isChecked = completedSteps[step.stepNumber] ?: false
-            IFixitStepCard(
+            StepCard(
                 step = step,
                 isChecked = isChecked,
                 onToggleCheck = {
@@ -580,7 +580,7 @@ fun IFixitStepGuideView(
                 )
             }
             items(detailData.listGuides) { guideItem ->
-                IFixitGuideCard(
+                GuideCard(
                     item = guideItem,
                     onClick = {
                         navigator.navigate(
@@ -594,10 +594,10 @@ fun IFixitStepGuideView(
 }
 
 /**
- * Step Card (iFixit Style Step Card)
+ * Step Card
  */
 @Composable
-fun IFixitStepCard(
+fun StepCard(
     step: GuideStep,
     isChecked: Boolean,
     onToggleCheck: () -> Unit
@@ -710,10 +710,10 @@ fun IFixitStepCard(
 }
 
 /**
- * iFixit Guide Item Card
+ * Guide Item Card
  */
 @Composable
-fun IFixitGuideCard(
+fun GuideCard(
     item: GuideCategory,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
