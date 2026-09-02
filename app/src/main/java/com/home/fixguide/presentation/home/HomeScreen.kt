@@ -270,7 +270,7 @@ fun HomeScreen(
                                             }
                                         }
                                     )
-                                    if ((index + 1) % nativeAdInterval == 0) {
+                                    if (nativeAdInterval > 0 && (index + 1) % nativeAdInterval == 0) {
                                         AdNativeView(adUnitId = nativeAdId ?: "")
                                     }
                                 }
@@ -528,7 +528,7 @@ private fun SubCategorySection(
                     onClick(item)
                 }
             )
-            if ((index + 1) % nativeAdInterval == 0) {
+            if (nativeAdInterval > 0 && (index + 1) % nativeAdInterval == 0) {
                 AdNativeView(adUnitId = nativeAdId ?: "")
             }
         }
