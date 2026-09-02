@@ -69,6 +69,7 @@ import com.guide.core_api.Resource
 import com.guide.core_api.model.guide.GuideCategory
 import com.guide.core_api.model.guide.GuideSubCategory
 import com.home.fixguide.base.BaseScreen
+import com.home.fixguide.presentation.component.AdNativeView
 import com.home.fixguide.presentation.component.FeatureSubCategory
 import com.home.fixguide.presentation.component.FeaturedCategoryCard
 import com.home.fixguide.presentation.component.HomeCategoryGridShimmer
@@ -104,6 +105,8 @@ fun HomeScreen(
     val searchResults by searchState.collectAsStateWithLifecycle()
     val currentQuery by searchQuery.collectAsStateWithLifecycle()
     val userThemePreference by isDarkMode.collectAsStateWithLifecycle()
+    val nativeAdId by nativeAdId.collectAsStateWithLifecycle()
+    val nativeAdInterval by nativeAdInterval.collectAsStateWithLifecycle()
     val isSystemDark = isSystemInDarkTheme()
     val isDark = userThemePreference ?: isSystemDark
     var selectedTabIndex by remember { mutableIntStateOf(0) }
@@ -254,7 +257,7 @@ fun HomeScreen(
                                         }
                                     }
                                 }
-                                items(items) { searchItem ->
+                                itemsIndexed(items) { index, searchItem ->
                                     SearchResultCard(
                                         item = searchItem,
                                         onClick = {
@@ -267,6 +270,9 @@ fun HomeScreen(
                                             }
                                         }
                                     )
+                                    if ((index + 1) % nativeAdInterval == 0) {
+                                        AdNativeView(adUnitId = nativeAdId ?: "")
+                                    }
                                 }
                             }
                         }
@@ -333,6 +339,8 @@ fun HomeScreen(
                             } else {
                                 SubCategorySection(
                                     items = subcategories,
+                                    nativeAdId = nativeAdId,
+                                    nativeAdInterval = nativeAdInterval,
                                     onClick = { item ->
                                         showInterstitialAd(activity) {
                                             navigator.navigate(
@@ -505,19 +513,24 @@ private fun SearchResultCard(
 @Composable
 private fun SubCategorySection(
     items: List<GuideSubCategory>,
+    nativeAdId: String?,
+    nativeAdInterval: Int,
     onClick: (GuideSubCategory) -> Unit
 ) {
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(4.dp),
         modifier = Modifier.fillMaxSize()
     ) {
-        itemsIndexed(items) { _, item ->
+        itemsIndexed(items) { index, item ->
             FeatureSubCategory(
                 item = item,
                 modifier = Modifier.clickable {
                     onClick(item)
                 }
             )
+            if ((index + 1) % nativeAdInterval == 0) {
+                AdNativeView(adUnitId = nativeAdId ?: "")
+            }
         }
     }
 }

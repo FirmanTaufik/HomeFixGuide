@@ -84,6 +84,8 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import androidx.compose.ui.platform.LocalContext
 import android.app.Activity
 
+import com.home.fixguide.presentation.component.AdNativeView
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Destination
 @Composable
@@ -101,6 +103,8 @@ fun DetailCategoryScreen(
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val isSaved by viewModel.isSaved(guideCategory.url).collectAsStateWithLifecycle(initialValue = false)
+    val nativeAdId by viewModel.nativeAdId.collectAsStateWithLifecycle()
+    val nativeAdInterval by viewModel.nativeAdInterval.collectAsStateWithLifecycle()
 
     BaseScreen(
         modifier = Modifier.fillMaxSize(),
@@ -215,6 +219,8 @@ fun DetailCategoryScreen(
                                     fallbackCategory = guideCategory,
                                     viewModel = viewModel,
                                     activity = activity,
+                                    nativeAdId = nativeAdId,
+                                    nativeAdInterval = nativeAdInterval,
                                     navigator = navigator
                                 )
                             } else {
@@ -224,6 +230,8 @@ fun DetailCategoryScreen(
                                     guideCategory = guideCategory,
                                     viewModel = viewModel,
                                     activity = activity,
+                                    nativeAdId = nativeAdId,
+                                    nativeAdInterval = nativeAdInterval,
                                     navigator = navigator
                                 )
                             }
@@ -246,6 +254,8 @@ fun DeviceDirectoryView(
     guideCategory: GuideCategory,
     viewModel: CategoryViewModel,
     activity: Activity?,
+    nativeAdId: String?,
+    nativeAdInterval: Int,
     navigator: DestinationsNavigator
 ) {
     val subcategories = detailData.listCategory
@@ -345,7 +355,7 @@ fun DeviceDirectoryView(
             }
 
             val chunked = subcategories.chunked(2)
-            items(chunked) { rowItems ->
+            itemsIndexed(chunked) { index, rowItems ->
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                     modifier = Modifier.fillMaxWidth()
@@ -369,6 +379,9 @@ fun DeviceDirectoryView(
                         Spacer(modifier = Modifier.weight(1f))
                     }
                 }
+                if ((index + 1) % nativeAdInterval == 0) {
+                    AdNativeView(adUnitId = nativeAdId ?: "")
+                }
             }
         }
 
@@ -384,7 +397,7 @@ fun DeviceDirectoryView(
                 )
             }
 
-            items(guides) { guideItem ->
+            itemsIndexed(guides) { index, guideItem ->
                 GuideCard(
                     item = guideItem,
                     onClick = {
@@ -397,6 +410,9 @@ fun DeviceDirectoryView(
                         }
                     }
                 )
+                if ((index + 1) % nativeAdInterval == 0) {
+                    AdNativeView(adUnitId = nativeAdId ?: "")
+                }
             }
         }
     }
@@ -412,6 +428,8 @@ fun StepGuideView(
     fallbackCategory: GuideCategory,
     viewModel: CategoryViewModel,
     activity: Activity?,
+    nativeAdId: String?,
+    nativeAdInterval: Int,
     navigator: DestinationsNavigator
 ) {
     val completedSteps = remember { mutableStateMapOf<Int, Boolean>() }
@@ -585,6 +603,9 @@ fun StepGuideView(
                     completedSteps[step.stepNumber] = !isChecked
                 }
             )
+            if ((index + 1) % nativeAdInterval == 0) {
+                AdNativeView(adUnitId = nativeAdId ?: "")
+            }
         }
 
         // Related Guides
@@ -597,7 +618,7 @@ fun StepGuideView(
                     modifier = Modifier.padding(top = 16.dp)
                 )
             }
-            items(detailData.listGuides) { guideItem ->
+            itemsIndexed(detailData.listGuides) { index, guideItem ->
                 GuideCard(
                     item = guideItem,
                     onClick = {
@@ -608,6 +629,9 @@ fun StepGuideView(
                         }
                     }
                 )
+                if ((index + 1) % nativeAdInterval == 0) {
+                    AdNativeView(adUnitId = nativeAdId ?: "")
+                }
             }
         }
     }
