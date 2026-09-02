@@ -81,6 +81,9 @@ import com.home.fixguide.ui.theme.TechBlue
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
+import androidx.compose.ui.platform.LocalContext
+import android.app.Activity
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Destination
 @Composable
@@ -89,6 +92,9 @@ fun DetailCategoryScreen(
     viewModel: CategoryViewModel = hiltViewModel(),
     navigator: DestinationsNavigator,
 ) {
+    val context = LocalContext.current
+    val activity = context as? Activity
+
     LaunchedEffect(guideCategory.url) {
         viewModel.getDetail(guideCategory.url)
     }
@@ -207,6 +213,8 @@ fun DetailCategoryScreen(
                                 StepGuideView(
                                     detailData = detailData,
                                     fallbackCategory = guideCategory,
+                                    viewModel = viewModel,
+                                    activity = activity,
                                     navigator = navigator
                                 )
                             } else {
@@ -214,6 +222,8 @@ fun DetailCategoryScreen(
                                 DeviceDirectoryView(
                                     detailData = detailData,
                                     guideCategory = guideCategory,
+                                    viewModel = viewModel,
+                                    activity = activity,
                                     navigator = navigator
                                 )
                             }
@@ -234,6 +244,8 @@ fun DetailCategoryScreen(
 fun DeviceDirectoryView(
     detailData: GuideDetailCategory,
     guideCategory: GuideCategory,
+    viewModel: CategoryViewModel,
+    activity: Activity?,
     navigator: DestinationsNavigator
 ) {
     val subcategories = detailData.listCategory
@@ -343,9 +355,11 @@ fun DeviceDirectoryView(
                             item = item,
                             onClick = {
                                 if (item.url.isNotBlank()) {
-                                    navigator.navigate(
-                                        DetailCategoryScreenDestination(guideCategory = item)
-                                    )
+                                    viewModel.showInterstitialAd(activity) {
+                                        navigator.navigate(
+                                            DetailCategoryScreenDestination(guideCategory = item)
+                                        )
+                                    }
                                 }
                             },
                             modifier = Modifier.weight(1f)
@@ -375,9 +389,11 @@ fun DeviceDirectoryView(
                     item = guideItem,
                     onClick = {
                         if (guideItem.url.isNotBlank()) {
-                            navigator.navigate(
-                                DetailCategoryScreenDestination(guideCategory = guideItem)
-                            )
+                            viewModel.showInterstitialAd(activity) {
+                                navigator.navigate(
+                                    DetailCategoryScreenDestination(guideCategory = guideItem)
+                                )
+                            }
                         }
                     }
                 )
@@ -394,6 +410,8 @@ fun DeviceDirectoryView(
 fun StepGuideView(
     detailData: GuideDetailCategory,
     fallbackCategory: GuideCategory,
+    viewModel: CategoryViewModel,
+    activity: Activity?,
     navigator: DestinationsNavigator
 ) {
     val completedSteps = remember { mutableStateMapOf<Int, Boolean>() }
@@ -583,9 +601,11 @@ fun StepGuideView(
                 GuideCard(
                     item = guideItem,
                     onClick = {
-                        navigator.navigate(
-                            DetailCategoryScreenDestination(guideCategory = guideItem)
-                        )
+                        viewModel.showInterstitialAd(activity) {
+                            navigator.navigate(
+                                DetailCategoryScreenDestination(guideCategory = guideItem)
+                            )
+                        }
                     }
                 )
             }

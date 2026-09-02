@@ -88,12 +88,18 @@ import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.LightMode
 import com.home.fixguide.ui.theme.MeterYellow
 
+import androidx.compose.ui.platform.LocalContext
+import android.app.Activity
+
 @Destination
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
     navigator: DestinationsNavigator,
 ) = with(viewModel) {
+    val context = LocalContext.current
+    val activity = context as? Activity
+
     val state by uiState.collectAsStateWithLifecycle()
     val searchResults by searchState.collectAsStateWithLifecycle()
     val currentQuery by searchQuery.collectAsStateWithLifecycle()
@@ -253,9 +259,11 @@ fun HomeScreen(
                                         item = searchItem,
                                         onClick = {
                                             if (searchItem.url.isNotBlank()) {
-                                                navigator.navigate(
-                                                    DetailCategoryScreenDestination(guideCategory = searchItem)
-                                                )
+                                                showInterstitialAd(activity) {
+                                                    navigator.navigate(
+                                                        DetailCategoryScreenDestination(guideCategory = searchItem)
+                                                    )
+                                                }
                                             }
                                         }
                                     )
@@ -315,24 +323,28 @@ fun HomeScreen(
                                 CategorySection(
                                     datas = categories,
                                     onClick = { item ->
-                                        navigator.navigate(
-                                            DetailCategoryScreenDestination(guideCategory = item)
-                                        )
+                                        showInterstitialAd(activity) {
+                                            navigator.navigate(
+                                                DetailCategoryScreenDestination(guideCategory = item)
+                                            )
+                                        }
                                     }
                                 )
                             } else {
                                 SubCategorySection(
                                     items = subcategories,
                                     onClick = { item ->
-                                        navigator.navigate(
-                                            DetailCategoryScreenDestination(
-                                                guideCategory = GuideCategory(
-                                                    text = item.text,
-                                                    image = "",
-                                                    url = item.url
+                                        showInterstitialAd(activity) {
+                                            navigator.navigate(
+                                                DetailCategoryScreenDestination(
+                                                    guideCategory = GuideCategory(
+                                                        text = item.text,
+                                                        image = "",
+                                                        url = item.url
+                                                    )
                                                 )
                                             )
-                                        )
+                                        }
                                     }
                                 )
                             }

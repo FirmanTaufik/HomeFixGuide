@@ -363,4 +363,27 @@ class GuideCase {
         }
     }
 
+    suspend fun getRepairClinicUpdates(): List<String> {
+        return try {
+            val url = "https://repairclinicnew.blogspot.com/p/update.html"
+            val html = client.get(url).bodyAsText()
+            val doc = Ksoup.parse(html)
+            val olElements = doc.select("ol")
+            val result = arrayListOf<String>()
+            olElements.forEach { ol ->
+                val liElements = ol.select("li")
+                liElements.forEach { li ->
+                    val text = li.text().trim()
+                    if (text.isNotBlank()) {
+                        result.add(text)
+                    }
+                }
+            }
+            result
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emptyList()
+        }
+    }
+
 }

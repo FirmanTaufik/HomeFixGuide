@@ -1,5 +1,6 @@
 package com.home.fixguide.presentation.home
 
+import android.app.Activity
 import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.guide.core_api.Resource
@@ -8,6 +9,7 @@ import com.guide.core_api.model.guide.GuideCategory
 import com.guide.core_api.model.guide.GuideSubCategory
 import com.home.fixguide.base.BaseViewModel
 import com.home.fixguide.data.local.ThemeManager
+import com.home.fixguide.helper.InterstitialAdManager
 import com.home.fixguide.helper.executeTask
 import com.home.fixguide.helper.mutableStateDelegate
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,7 +22,8 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     val guideCase: GuideCase,
-    val themeManager: ThemeManager
+    val themeManager: ThemeManager,
+    val interstitialAdManager: InterstitialAdManager
 ) : BaseViewModel() {
 
     val isDarkMode = themeManager.isDarkMode
@@ -39,6 +42,15 @@ class HomeViewModel @Inject constructor(
 
     init {
         getCategory()
+        interstitialAdManager.preloadAd()
+    }
+
+    fun showInterstitialAd(activity: Activity?, onAdDismissed: () -> Unit) {
+        if (activity != null) {
+            interstitialAdManager.tryOpenInterAds(activity, onAdDismissed)
+        } else {
+            onAdDismissed()
+        }
     }
 
     fun getCategory() = executeTask(

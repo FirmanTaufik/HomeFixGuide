@@ -47,6 +47,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.home.fixguide.presentation.destinations.HomeScreenDestination
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.home.fixguide.presentation.destinations.SplashScreenDestination
 import com.home.fixguide.ui.theme.CircuitGreen
 import com.home.fixguide.ui.theme.IndigoAccent
@@ -61,7 +62,8 @@ import kotlinx.coroutines.launch
 @Destination
 @Composable
 fun SplashScreen(
-    navigator: DestinationsNavigator
+    navigator: DestinationsNavigator,
+    viewModel: SplashViewModel = hiltViewModel()
 ) {
     val isDark = isSystemInDarkTheme()
 
