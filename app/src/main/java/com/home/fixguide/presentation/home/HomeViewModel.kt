@@ -1,5 +1,6 @@
 package com.home.fixguide.presentation.home
 
+import android.app.Activity
 import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.guide.core_api.Resource
@@ -7,23 +8,47 @@ import com.guide.core_api.guidecase.GuideCase
 import com.guide.core_api.model.guide.GuideCategory
 import com.guide.core_api.model.guide.GuideSubCategory
 import com.home.fixguide.base.BaseViewModel
+import com.home.fixguide.data.local.AppDataStore
+import com.home.fixguide.data.local.ConfigKey
 import com.home.fixguide.data.local.ThemeManager
+import com.home.fixguide.helper.InterstitialAdManager
 import com.home.fixguide.helper.executeTask
 import com.home.fixguide.helper.mutableStateDelegate
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     val guideCase: GuideCase,
-    val themeManager: ThemeManager
+    val themeManager: ThemeManager,
+    val interstitialAdManager: InterstitialAdManager,
+    private val appDataStore: AppDataStore
 ) : BaseViewModel() {
 
     val isDarkMode = themeManager.isDarkMode
+
+    val nativeAdId: StateFlow<String?> = appDataStore.getConfig(ConfigKey.ADMOB_NATIVE_ID)
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = null
+        )
+
+    val nativeAdInterval: StateFlow<Int> = appDataStore.getConfig(ConfigKey.INTERVAL_NATIVE)
+        .map { it?.toIntOrNull() ?: 2 }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = 2
+        )
 
     fun toggleTheme(isSystemDark: Boolean) {
         themeManager.toggleDarkMode(isSystemDark)
@@ -39,6 +64,15 @@ class HomeViewModel @Inject constructor(
 
     init {
         getCategory()
+        interstitialAdManager.preloadAd()
+    }
+
+    fun showInterstitialAd(activity: Activity?, onAdDismissed: () -> Unit) {
+        if (activity != null) {
+            interstitialAdManager.tryOpenInterAds(activity, onAdDismissed)
+        } else {
+            onAdDismissed()
+        }
     }
 
     fun getCategory() = executeTask(

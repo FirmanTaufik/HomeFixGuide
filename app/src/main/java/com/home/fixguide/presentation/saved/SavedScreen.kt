@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
@@ -51,6 +52,7 @@ import coil3.compose.AsyncImage
 import com.guide.core_api.model.guide.GuideCategory
 import com.home.fixguide.base.BaseScreen
 import com.home.fixguide.data.local.SavedGuideEntity
+import com.home.fixguide.presentation.component.AdNativeView
 import com.home.fixguide.presentation.destinations.DetailCategoryScreenDestination
 import com.home.fixguide.ui.theme.TechBlue
 import com.ramcosta.composedestinations.annotation.Destination
@@ -64,31 +66,34 @@ fun SavedScreen(
     navigator: DestinationsNavigator
 ) {
     val savedList by viewModel.savedGuides.collectAsStateWithLifecycle()
+    val nativeAdId by viewModel.nativeAdId.collectAsStateWithLifecycle()
+    val nativeAdInterval by viewModel.nativeAdInterval.collectAsStateWithLifecycle()
 
     BaseScreen(
         modifier = Modifier.fillMaxSize(),
         viewModel = viewModel
     ) {
         Scaffold(
+            modifier = Modifier.fillMaxSize(),
             topBar = {
                 TopAppBar(
                     title = {
                         Text(
-                            text = "Saved Guides",
+                            text = "Saved Guides & Devices",
+                            style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold
                         )
                     },
                     colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.surface,
-                        titleContentColor = MaterialTheme.colorScheme.onSurface
+                        containerColor = MaterialTheme.colorScheme.background
                     )
                 )
             }
-        ) { paddingValues ->
+        ) { innerPadding ->
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(paddingValues)
+                    .padding(innerPadding)
             ) {
                 if (savedList.isEmpty()) {
                     Box(
@@ -135,7 +140,7 @@ fun SavedScreen(
                         verticalArrangement = Arrangement.spacedBy(12.dp),
                         modifier = Modifier.fillMaxSize()
                     ) {
-                        items(savedList, key = { it.id }) { item ->
+                        itemsIndexed(savedList, key = { _, item -> item.id }) { index, item ->
                             SavedItemCard(
                                 item = item,
                                 onClick = {
@@ -153,6 +158,9 @@ fun SavedScreen(
                                     viewModel.removeSavedGuide(item.url)
                                 }
                             )
+                            if (nativeAdInterval > 0 && (index + 1) % nativeAdInterval == 0) {
+                                AdNativeView(adUnitId = nativeAdId ?: "")
+                            }
                         }
                     }
                 }

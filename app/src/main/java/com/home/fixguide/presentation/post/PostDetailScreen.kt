@@ -24,7 +24,7 @@ import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 fun PostDetailScreen(
     title: String,
     imageUrl: String,
-    content: String, // Nanti bisa disesuaikan jika berupa HTML
+    content: String,
     author: String,
     date: String,
     navigator: DestinationsNavigator

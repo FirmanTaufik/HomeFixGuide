@@ -3,7 +3,7 @@ name: Android CI/CD & Firebase Distribution
 on:
   push:
     branches:
-      - release/**  # Workflow akan otomatis ter-trigger jika kamu push ke branch dengan awalan release/ (misal: release/v1.0.0)
+      - release/**
 
 jobs:
   build:
@@ -23,18 +23,19 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Build Debug APK (Ganti ke assembleRelease jika sudah setup Keystore/Signing)
-        run: ./gradlew assembleDebug
+      # Menggunakan github.run_number agar versionCode otomatis bertambah setiap build
+      - name: Build Release/Debug APK with Auto Increment Build Number
+        run: ./gradlew assembleDebug -Pandroid.injected.versionCode=${{ github.run_number }}
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: app-apk
-          path: app/build/outputs/apk/debug/app-debug.apk # Sesuaikan path jika menggunakan build release
+          path: app/build/outputs/apk/debug/app-debug.apk
 
   distribute:
     name: Upload to Firebase App Distribution
-    needs: build # Job ini hanya akan jalan jika job 'build' di atas sukses
+    needs: build
     runs-on: ubuntu-latest
 
     steps:
@@ -54,9 +55,21 @@ jobs:
 
       - name: Distribute to Firebase
         env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          GOOGLE_APPLICATION_CREDENTIALS_CONTENT: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_JSON }}
         run: |
+          # Buat kredensial sementara untuk mengatasi warning deprecated token
+          echo "$GOOGLE_APPLICATION_CREDENTIALS_CONTENT" > gcp-key.json
+          export GOOGLE_APPLICATION_CREDENTIALS="gcp-key.json"
+
+          # Membuat format tanggal dan jam otomatis
+          BUILD_DATE=$(TZ="Asia/Jakarta" date "+%Y-%m-%d %H:%M:%S")
+
+          # Upload ke Firebase dengan Release Notes berisi tanggal, jam, dan info branch
           firebase appdistribution:distribute app/build/outputs/apk/debug/app-debug.apk \
             --app "${{ secrets.FIREBASE_APP_ID }}" \
             --groups "${{ secrets.FIREBASE_TESTER_GROUP }}" \
-            --release-notes "Automatic build from GitHub Actions (Branch: ${{ github.ref_name }})"
+            --release-notes "🚀 Build Success!
+            - Waktu Build: $BUILD_DATE WIB
+            - Branch: ${{ github.ref_name }}
+            - Build Number: ${{ github.run_number }}
+            - Commit: ${{ github.sha }}"
