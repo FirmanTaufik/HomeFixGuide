@@ -258,7 +258,6 @@ fun SplashScreen(
             }
         }
 
-        // Bottom Badge
         Box(
             modifier = Modifier
                 .fillMaxSize()
