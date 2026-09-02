@@ -379,7 +379,7 @@ fun DeviceDirectoryView(
                         Spacer(modifier = Modifier.weight(1f))
                     }
                 }
-                if ((index + 1) % nativeAdInterval == 0) {
+                if (nativeAdInterval > 0 && (index + 1) % nativeAdInterval == 0) {
                     AdNativeView(adUnitId = nativeAdId ?: "")
                 }
             }
@@ -410,7 +410,7 @@ fun DeviceDirectoryView(
                         }
                     }
                 )
-                if ((index + 1) % nativeAdInterval == 0) {
+                if (nativeAdInterval > 0 && (index + 1) % nativeAdInterval == 0) {
                     AdNativeView(adUnitId = nativeAdId ?: "")
                 }
             }
@@ -603,7 +603,7 @@ fun StepGuideView(
                     completedSteps[step.stepNumber] = !isChecked
                 }
             )
-            if ((index + 1) % nativeAdInterval == 0) {
+            if (nativeAdInterval > 0 && (index + 1) % nativeAdInterval == 0) {
                 AdNativeView(adUnitId = nativeAdId ?: "")
             }
         }
@@ -629,7 +629,7 @@ fun StepGuideView(
                         }
                     }
                 )
-                if ((index + 1) % nativeAdInterval == 0) {
+                if (nativeAdInterval > 0 && (index + 1) % nativeAdInterval == 0) {
                     AdNativeView(adUnitId = nativeAdId ?: "")
                 }
             }
