@@ -69,6 +69,7 @@ import com.guide.core_api.Resource
 import com.guide.core_api.model.guide.GuideCategory
 import com.guide.core_api.model.guide.GuideSubCategory
 import com.home.fixguide.base.BaseScreen
+import com.home.fixguide.presentation.component.AdNativeView
 import com.home.fixguide.presentation.component.FeatureSubCategory
 import com.home.fixguide.presentation.component.FeaturedCategoryCard
 import com.home.fixguide.presentation.component.HomeCategoryGridShimmer
@@ -88,16 +89,24 @@ import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.LightMode
 import com.home.fixguide.ui.theme.MeterYellow
 
+import androidx.compose.ui.platform.LocalContext
+import android.app.Activity
+
 @Destination
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
     navigator: DestinationsNavigator,
 ) = with(viewModel) {
+    val context = LocalContext.current
+    val activity = context as? Activity
+
     val state by uiState.collectAsStateWithLifecycle()
     val searchResults by searchState.collectAsStateWithLifecycle()
     val currentQuery by searchQuery.collectAsStateWithLifecycle()
     val userThemePreference by isDarkMode.collectAsStateWithLifecycle()
+    val nativeAdId by nativeAdId.collectAsStateWithLifecycle()
+    val nativeAdInterval by nativeAdInterval.collectAsStateWithLifecycle()
     val isSystemDark = isSystemInDarkTheme()
     val isDark = userThemePreference ?: isSystemDark
     var selectedTabIndex by remember { mutableIntStateOf(0) }
@@ -248,17 +257,22 @@ fun HomeScreen(
                                         }
                                     }
                                 }
-                                items(items) { searchItem ->
+                                itemsIndexed(items) { index, searchItem ->
                                     SearchResultCard(
                                         item = searchItem,
                                         onClick = {
                                             if (searchItem.url.isNotBlank()) {
-                                                navigator.navigate(
-                                                    DetailCategoryScreenDestination(guideCategory = searchItem)
-                                                )
+                                                showInterstitialAd(activity) {
+                                                    navigator.navigate(
+                                                        DetailCategoryScreenDestination(guideCategory = searchItem)
+                                                    )
+                                                }
                                             }
                                         }
                                     )
+                                    if ((index + 1) % nativeAdInterval == 0) {
+                                        AdNativeView(adUnitId = nativeAdId ?: "")
+                                    }
                                 }
                             }
                         }
@@ -315,24 +329,30 @@ fun HomeScreen(
                                 CategorySection(
                                     datas = categories,
                                     onClick = { item ->
-                                        navigator.navigate(
-                                            DetailCategoryScreenDestination(guideCategory = item)
-                                        )
+                                        showInterstitialAd(activity) {
+                                            navigator.navigate(
+                                                DetailCategoryScreenDestination(guideCategory = item)
+                                            )
+                                        }
                                     }
                                 )
                             } else {
                                 SubCategorySection(
                                     items = subcategories,
+                                    nativeAdId = nativeAdId,
+                                    nativeAdInterval = nativeAdInterval,
                                     onClick = { item ->
-                                        navigator.navigate(
-                                            DetailCategoryScreenDestination(
-                                                guideCategory = GuideCategory(
-                                                    text = item.text,
-                                                    image = "",
-                                                    url = item.url
+                                        showInterstitialAd(activity) {
+                                            navigator.navigate(
+                                                DetailCategoryScreenDestination(
+                                                    guideCategory = GuideCategory(
+                                                        text = item.text,
+                                                        image = "",
+                                                        url = item.url
+                                                    )
                                                 )
                                             )
-                                        )
+                                        }
                                     }
                                 )
                             }
@@ -493,19 +513,24 @@ private fun SearchResultCard(
 @Composable
 private fun SubCategorySection(
     items: List<GuideSubCategory>,
+    nativeAdId: String?,
+    nativeAdInterval: Int,
     onClick: (GuideSubCategory) -> Unit
 ) {
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(4.dp),
         modifier = Modifier.fillMaxSize()
     ) {
-        itemsIndexed(items) { _, item ->
+        itemsIndexed(items) { index, item ->
             FeatureSubCategory(
                 item = item,
                 modifier = Modifier.clickable {
                     onClick(item)
                 }
             )
+            if ((index + 1) % nativeAdInterval == 0) {
+                AdNativeView(adUnitId = nativeAdId ?: "")
+            }
         }
     }
 }

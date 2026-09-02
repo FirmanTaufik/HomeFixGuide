@@ -13,7 +13,12 @@
           "package_name": "com.app.apas"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "630295094602-93ub12kv3v4njqid8tfe9f3eoblh7j8e.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDdyNE1nAoJojXuzDBQgnufsOguK-aPR-Y"
@@ -21,7 +26,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "630295094602-93ub12kv3v4njqid8tfe9f3eoblh7j8e.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     },
@@ -32,7 +42,12 @@
           "package_name": "com.home.fixguide"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "630295094602-93ub12kv3v4njqid8tfe9f3eoblh7j8e.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDdyNE1nAoJojXuzDBQgnufsOguK-aPR-Y"
@@ -40,7 +55,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "630295094602-93ub12kv3v4njqid8tfe9f3eoblh7j8e.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     },
@@ -51,7 +71,20 @@
           "package_name": "com.testremoteconfig.app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "630295094602-6cf35357jfkbq4p1um1erveqnta6jbqv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.testremoteconfig.app",
+            "certificate_hash": "a2cd3d20bcc08771abcd2b3fa2a3243d3f094621"
+          }
+        },
+        {
+          "client_id": "630295094602-93ub12kv3v4njqid8tfe9f3eoblh7j8e.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDdyNE1nAoJojXuzDBQgnufsOguK-aPR-Y"
@@ -59,7 +92,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "630295094602-93ub12kv3v4njqid8tfe9f3eoblh7j8e.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
