@@ -1,5 +1,6 @@
 package com.home.fixguide.presentation.splash
 
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.guide.core_api.guidecase.GuideCase
@@ -8,18 +9,23 @@ import com.home.fixguide.data.local.AppDataStore
 import com.home.fixguide.data.local.ConfigKey
 import com.home.fixguide.helper.AppOpenAdManager
 import com.home.fixguide.helper.InterstitialAdManager
+import com.home.fixguide.helper.mutableStateDelegate
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class SplashViewModel @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val guideCase: GuideCase,
     private val appDataStore: AppDataStore,
     private val appOpenAdManager: AppOpenAdManager,
     private val interstitialAdManager: InterstitialAdManager
 ) : BaseViewModel() {
+
+    var isUpdate by mutableStateDelegate<Triple<Boolean, Boolean, String>>(Triple(true, false, ""))
 
     init {
         fetchUpdateData()
@@ -55,6 +61,7 @@ class SplashViewModel @Inject constructor(
                             }
                         } else {
                             Log.w("SplashViewModel", "Item without colon [$index]: $text")
+                            isUpdate.value = Triple(false,  text != context.packageName, text)
                         }
                     }
                     // Preload App Open Ad & Interstitial Ad once config keys are stored

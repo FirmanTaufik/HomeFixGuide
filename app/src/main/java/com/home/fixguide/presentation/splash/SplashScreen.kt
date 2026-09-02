@@ -1,5 +1,7 @@
 package com.home.fixguide.presentation.splash
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
@@ -26,6 +28,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Build
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -42,12 +46,15 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.home.fixguide.presentation.destinations.HomeScreenDestination
+import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.home.fixguide.presentation.destinations.HomeScreenDestination
 import com.home.fixguide.presentation.destinations.SplashScreenDestination
 import com.home.fixguide.ui.theme.CircuitGreen
 import com.home.fixguide.ui.theme.IndigoAccent
@@ -65,7 +72,9 @@ fun SplashScreen(
     navigator: DestinationsNavigator,
     viewModel: SplashViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
     val isDark = isSystemInDarkTheme()
+    val isUpdate by viewModel.isUpdate.collectAsStateWithLifecycle()
 
     val scale = remember { Animatable(0.3f) }
     val alpha = remember { Animatable(0f) }
@@ -85,7 +94,7 @@ fun SplashScreen(
         label = "pulse_scale"
     )
 
-    LaunchedEffect(key1 = true) {
+    LaunchedEffect(key1 = isUpdate) {
         // Staggered Entrance Animations
         launch {
             scale.animateTo(
@@ -128,13 +137,8 @@ fun SplashScreen(
             )
         }
 
-        // Navigate to HomeScreen after splash display
-        delay(1400)
-        navigator.navigate(HomeScreenDestination) {
-            popUpTo(SplashScreenDestination.route) {
-                inclusive = true
-            }
-        }
+        // Navigate to HomeScreen after splash display ONLY if app does not require update
+
     }
 
     // Dynamic Colors based on Theme
@@ -291,5 +295,50 @@ fun SplashScreen(
                 }
             }
         }
+
+        // Non-dismissible Update Dialog when isUpdate is true
+        if (!isUpdate.first) {
+            if (isUpdate.second) {
+                AlertDialog(
+                    onDismissRequest = { /* Non-dismissible */ },
+                    properties = DialogProperties(
+                        dismissOnBackPress = false,
+                        dismissOnClickOutside = false
+                    ),
+                    title = {
+                        Text(
+                            text = "Application Need Update",
+                            fontWeight = FontWeight.Bold
+                        )
+                    },
+                    text = {
+                        Text(
+                            text = "A new version of the application is available. Please update to continue using the app."
+                        )
+                    },
+                    confirmButton = {
+                        Button(
+                            onClick = {
+                                val playStoreUrl = "https://play.google.com/store/apps/details?id=${isUpdate.third}"
+                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(playStoreUrl))
+                                context.startActivity(intent)
+                            }
+                        ) {
+                            Text(text = "Update")
+                        }
+                    }
+                )
+            } else {
+                LaunchedEffect(Unit) {
+                    delay(1400)
+                    navigator.navigate(HomeScreenDestination) {
+                        popUpTo(SplashScreenDestination.route) {
+                            inclusive = true
+                        }
+                    }
+                }
+            }
+        }
+
     }
 }
