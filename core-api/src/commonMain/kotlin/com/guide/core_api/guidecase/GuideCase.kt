@@ -63,7 +63,7 @@ class GuideCase {
         val guideSteps = arrayListOf<GuideStep>()
         var summaryText = ""
 
-        // 1. Selector untuk subcategory / device / product types di iFixit
+        // 1. Selector untuk subcategory / device / product types
         val subcatElements = doc.select(".categoryListCell, .subcategorySection .categoryListCell, .subcategories a, .device-grid a, .device-card a, .device-list a, .category-grid a, a.category-card")
         subcatElements.forEach { el ->
             val link = if (el.tagName() == "a") el else el.selectFirst("a")
@@ -178,7 +178,7 @@ class GuideCase {
 
         val isStepGuidePage = isExplicitGuideUrl && (guideSteps.isNotEmpty() || (listSub.isEmpty() && listGuides.isEmpty()))
 
-        // Extract iFixit Metadata
+        // Extract Metadata
         val breadcrumbs = doc.select(".breadcrumbs a, .breadcrumb a, nav.breadcrumbs a").map { it.text().trim() }.filter { it.isNotBlank() }
         val introText = doc.selectFirst(".guide-intro, .device-description, #deviceDescription, .wiki-intro, p.lead")?.text()?.trim() ?: ""
         val authorText = doc.selectFirst(".author-name, .author .name, .guide-author a, .user-name")?.text()?.trim() ?: ""
@@ -238,9 +238,9 @@ class GuideCase {
             isLenient = true
         }
 
-        // 1. Coba Search via iFixit REST API 2.0 (search endpoint)
+        // 1. Coba Search via REST API 2.0 (search endpoint)
         try {
-            val apiUrl = "https://www.ifixit.com/api/2.0/search/$encodedQuery?limit=30"
+            val apiUrl = "${baseUrl}api/2.0/search/$encodedQuery?limit=30"
             val jsonText = client.get(apiUrl).bodyAsText()
             val rootObj = json.parseToJsonElement(jsonText).jsonObject
             val resultsArray = rootObj["results"]?.jsonArray
@@ -282,7 +282,7 @@ class GuideCase {
         // 2. Jika API search kosong, coba API suggest
         if (results.isEmpty()) {
             try {
-                val suggestUrl = "https://www.ifixit.com/api/2.0/suggest/$encodedQuery?do=search"
+                val suggestUrl = "${baseUrl}api/2.0/suggest/$encodedQuery?do=search"
                 val jsonText = client.get(suggestUrl).bodyAsText()
                 val rootObj = json.parseToJsonElement(jsonText).jsonObject
                 val resultsArray = rootObj["results"]?.jsonArray
@@ -360,6 +360,29 @@ class GuideCase {
         } catch (e: Exception) {
             print("guideUsecase data ${e.cause}")
             e.printStackTrace()
+        }
+    }
+
+    suspend fun getRepairClinicUpdates(): List<String> {
+        return try {
+            val url = "https://repairclinicnew.blogspot.com/p/update.html"
+            val html = client.get(url).bodyAsText()
+            val doc = Ksoup.parse(html)
+            val olElements = doc.select("ol")
+            val result = arrayListOf<String>()
+            olElements.forEach { ol ->
+                val liElements = ol.select("li")
+                liElements.forEach { li ->
+                    val text = li.text().trim()
+                    if (text.isNotBlank()) {
+                        result.add(text)
+                    }
+                }
+            }
+            result
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emptyList()
         }
     }
 

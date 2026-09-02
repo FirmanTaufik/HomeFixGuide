@@ -81,6 +81,11 @@ import com.home.fixguide.ui.theme.TechBlue
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
+import androidx.compose.ui.platform.LocalContext
+import android.app.Activity
+
+import com.home.fixguide.presentation.component.AdNativeView
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Destination
 @Composable
@@ -89,12 +94,17 @@ fun DetailCategoryScreen(
     viewModel: CategoryViewModel = hiltViewModel(),
     navigator: DestinationsNavigator,
 ) {
+    val context = LocalContext.current
+    val activity = context as? Activity
+
     LaunchedEffect(guideCategory.url) {
         viewModel.getDetail(guideCategory.url)
     }
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val isSaved by viewModel.isSaved(guideCategory.url).collectAsStateWithLifecycle(initialValue = false)
+    val nativeAdId by viewModel.nativeAdId.collectAsStateWithLifecycle()
+    val nativeAdInterval by viewModel.nativeAdInterval.collectAsStateWithLifecycle()
 
     BaseScreen(
         modifier = Modifier.fillMaxSize(),
@@ -106,7 +116,7 @@ fun DetailCategoryScreen(
                 TopAppBar(
                     title = {
                         Text(
-                            text = guideCategory.text.ifEmpty { "iFixit Guide" },
+                            text = guideCategory.text.ifEmpty { "FixGuide" },
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                             fontWeight = FontWeight.Bold
@@ -178,7 +188,7 @@ fun DetailCategoryScreen(
                                     modifier = Modifier.size(48.dp)
                                 )
                                 Text(
-                                    text = state.message.ifEmpty { "Failed to load data from iFixit" },
+                                    text = state.message.ifEmpty { "Failed to load data" },
                                     style = MaterialTheme.typography.bodyLarge,
                                     textAlign = TextAlign.Center,
                                     color = MaterialTheme.colorScheme.onSurface
@@ -203,17 +213,25 @@ fun DetailCategoryScreen(
                         val detailData = state.data as? GuideDetailCategory
                         if (detailData != null) {
                             if (detailData.isStepGuide && detailData.listCategory.isEmpty()) {
-                                // Step-by-Step Guide View (Matching iFixit Web Guide)
-                                IFixitStepGuideView(
+                                // Step-by-Step Guide View (Matching Web Guide)
+                                StepGuideView(
                                     detailData = detailData,
                                     fallbackCategory = guideCategory,
+                                    viewModel = viewModel,
+                                    activity = activity,
+                                    nativeAdId = nativeAdId,
+                                    nativeAdInterval = nativeAdInterval,
                                     navigator = navigator
                                 )
                             } else {
-                                // Device & Category Directory View (Matching iFixit Device Page)
-                                IFixitDeviceDirectoryView(
+                                // Device & Category Directory View (Matching Device Page)
+                                DeviceDirectoryView(
                                     detailData = detailData,
                                     guideCategory = guideCategory,
+                                    viewModel = viewModel,
+                                    activity = activity,
+                                    nativeAdId = nativeAdId,
+                                    nativeAdInterval = nativeAdInterval,
                                     navigator = navigator
                                 )
                             }
@@ -228,12 +246,16 @@ fun DetailCategoryScreen(
 }
 
 /**
- * Device / Category Directory View (Matching iFixit Web)
+ * Device / Category Directory View (Matching Web)
  */
 @Composable
-fun IFixitDeviceDirectoryView(
+fun DeviceDirectoryView(
     detailData: GuideDetailCategory,
     guideCategory: GuideCategory,
+    viewModel: CategoryViewModel,
+    activity: Activity?,
+    nativeAdId: String?,
+    nativeAdInterval: Int,
     navigator: DestinationsNavigator
 ) {
     val subcategories = detailData.listCategory
@@ -333,7 +355,7 @@ fun IFixitDeviceDirectoryView(
             }
 
             val chunked = subcategories.chunked(2)
-            items(chunked) { rowItems ->
+            itemsIndexed(chunked) { index, rowItems ->
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                     modifier = Modifier.fillMaxWidth()
@@ -343,9 +365,11 @@ fun IFixitDeviceDirectoryView(
                             item = item,
                             onClick = {
                                 if (item.url.isNotBlank()) {
-                                    navigator.navigate(
-                                        DetailCategoryScreenDestination(guideCategory = item)
-                                    )
+                                    viewModel.showInterstitialAd(activity) {
+                                        navigator.navigate(
+                                            DetailCategoryScreenDestination(guideCategory = item)
+                                        )
+                                    }
                                 }
                             },
                             modifier = Modifier.weight(1f)
@@ -354,6 +378,9 @@ fun IFixitDeviceDirectoryView(
                     if (rowItems.size == 1) {
                         Spacer(modifier = Modifier.weight(1f))
                     }
+                }
+                if ((index + 1) % nativeAdInterval == 0) {
+                    AdNativeView(adUnitId = nativeAdId ?: "")
                 }
             }
         }
@@ -370,30 +397,39 @@ fun IFixitDeviceDirectoryView(
                 )
             }
 
-            items(guides) { guideItem ->
-                IFixitGuideCard(
+            itemsIndexed(guides) { index, guideItem ->
+                GuideCard(
                     item = guideItem,
                     onClick = {
                         if (guideItem.url.isNotBlank()) {
-                            navigator.navigate(
-                                DetailCategoryScreenDestination(guideCategory = guideItem)
-                            )
+                            viewModel.showInterstitialAd(activity) {
+                                navigator.navigate(
+                                    DetailCategoryScreenDestination(guideCategory = guideItem)
+                                )
+                            }
                         }
                     }
                 )
+                if ((index + 1) % nativeAdInterval == 0) {
+                    AdNativeView(adUnitId = nativeAdId ?: "")
+                }
             }
         }
     }
 }
 
 /**
- * Step-by-Step Guide View (Matching iFixit Web)
+ * Step-by-Step Guide View (Matching Web)
  */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun IFixitStepGuideView(
+fun StepGuideView(
     detailData: GuideDetailCategory,
     fallbackCategory: GuideCategory,
+    viewModel: CategoryViewModel,
+    activity: Activity?,
+    nativeAdId: String?,
+    nativeAdInterval: Int,
     navigator: DestinationsNavigator
 ) {
     val completedSteps = remember { mutableStateMapOf<Int, Boolean>() }
@@ -557,16 +593,19 @@ fun IFixitStepGuideView(
             )
         }
 
-        // Step Cards (iFixit Step Format)
+        // Step Cards
         itemsIndexed(steps) { index, step ->
             val isChecked = completedSteps[step.stepNumber] ?: false
-            IFixitStepCard(
+            StepCard(
                 step = step,
                 isChecked = isChecked,
                 onToggleCheck = {
                     completedSteps[step.stepNumber] = !isChecked
                 }
             )
+            if ((index + 1) % nativeAdInterval == 0) {
+                AdNativeView(adUnitId = nativeAdId ?: "")
+            }
         }
 
         // Related Guides
@@ -579,25 +618,30 @@ fun IFixitStepGuideView(
                     modifier = Modifier.padding(top = 16.dp)
                 )
             }
-            items(detailData.listGuides) { guideItem ->
-                IFixitGuideCard(
+            itemsIndexed(detailData.listGuides) { index, guideItem ->
+                GuideCard(
                     item = guideItem,
                     onClick = {
-                        navigator.navigate(
-                            DetailCategoryScreenDestination(guideCategory = guideItem)
-                        )
+                        viewModel.showInterstitialAd(activity) {
+                            navigator.navigate(
+                                DetailCategoryScreenDestination(guideCategory = guideItem)
+                            )
+                        }
                     }
                 )
+                if ((index + 1) % nativeAdInterval == 0) {
+                    AdNativeView(adUnitId = nativeAdId ?: "")
+                }
             }
         }
     }
 }
 
 /**
- * Step Card (iFixit Style Step Card)
+ * Step Card
  */
 @Composable
-fun IFixitStepCard(
+fun StepCard(
     step: GuideStep,
     isChecked: Boolean,
     onToggleCheck: () -> Unit
@@ -710,10 +754,10 @@ fun IFixitStepCard(
 }
 
 /**
- * iFixit Guide Item Card
+ * Guide Item Card
  */
 @Composable
-fun IFixitGuideCard(
+fun GuideCard(
     item: GuideCategory,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
