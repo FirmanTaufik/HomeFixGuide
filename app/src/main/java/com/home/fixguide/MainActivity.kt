@@ -9,6 +9,8 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bookmark
@@ -17,10 +19,10 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -96,51 +98,63 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     contentWindowInsets = WindowInsets(0, 0, 0, 0),
                     bottomBar = {
-                        Column {
-                            AnimatedVisibility(showBottomMenu) {
-                                NavigationBar(
-                                    containerColor = MaterialTheme.colorScheme.surface,
-                                    tonalElevation = 6.dp,
-                                    windowInsets = NavigationBarDefaults.windowInsets
+                        if (showBottomMenu || showBanner) {
+                            Surface(
+                                color = MaterialTheme.colorScheme.surface,
+                                tonalElevation = 6.dp,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .navigationBarsPadding()
                                 ) {
-                                    items.forEachIndexed { index, destination ->
-                                        NavigationBarItem(
-                                            selected = selectedDestination == index,
-                                            onClick = {
-                                                navController.navigate(destination.third.route) {
-                                                    popUpTo(navController.graph.findStartDestination().id) {
-                                                        saveState = true
-                                                    }
-                                                    launchSingleTop = true
-                                                    restoreState = true
-                                                }
-                                                selectedDestination = index
-                                            },
-                                            icon = {
-                                                Icon(
-                                                    destination.second,
-                                                    contentDescription = destination.first
+                                    AnimatedVisibility(showBottomMenu) {
+                                        NavigationBar(
+                                            containerColor = MaterialTheme.colorScheme.surface,
+                                            tonalElevation = 0.dp,
+                                            windowInsets = WindowInsets(0, 0, 0, 0)
+                                        ) {
+                                            items.forEachIndexed { index, destination ->
+                                                NavigationBarItem(
+                                                    selected = selectedDestination == index,
+                                                    onClick = {
+                                                        navController.navigate(destination.third.route) {
+                                                            popUpTo(navController.graph.findStartDestination().id) {
+                                                                saveState = true
+                                                            }
+                                                            launchSingleTop = true
+                                                            restoreState = true
+                                                        }
+                                                        selectedDestination = index
+                                                    },
+                                                    icon = {
+                                                        Icon(
+                                                            destination.second,
+                                                            contentDescription = destination.first
+                                                        )
+                                                    },
+                                                    label = {
+                                                        Text(
+                                                            text = destination.first,
+                                                            fontWeight = if (selectedDestination == index) FontWeight.Bold else FontWeight.Normal
+                                                        )
+                                                    },
+                                                    colors = NavigationBarItemDefaults.colors(
+                                                        selectedIconColor = TechBlue,
+                                                        selectedTextColor = TechBlue,
+                                                        indicatorColor = TechBlueLight,
+                                                        unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                                        unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
+                                                    )
                                                 )
-                                            },
-                                            label = {
-                                                Text(
-                                                    text = destination.first,
-                                                    fontWeight = if (selectedDestination == index) FontWeight.Bold else FontWeight.Normal
-                                                )
-                                            },
-                                            colors = NavigationBarItemDefaults.colors(
-                                                selectedIconColor = TechBlue,
-                                                selectedTextColor = TechBlue,
-                                                indicatorColor = TechBlueLight,
-                                                unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                                                unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
-                                            )
-                                        )
+                                            }
+                                        }
+                                    }
+                                    if (showBanner && !bannerAdId.isNullOrBlank()) {
+                                        AdBannerView(adUnitId = bannerAdId!!)
                                     }
                                 }
-                            }
-                            if (showBanner && !bannerAdId.isNullOrBlank()) {
-                                AdBannerView(adUnitId = bannerAdId!!)
                             }
                         }
                     }) { innerPadding ->
